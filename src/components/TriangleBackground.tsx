@@ -5,7 +5,7 @@ export default function TriangleBackground(props: any) {
 
     return(
         <View style={[props.style, styles.container]}>
-            <View style={styles.triangle}/>
+            {/* <View style={styles.triangle}/> */}
             {
                 props.children
             }
