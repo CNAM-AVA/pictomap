@@ -36,8 +36,10 @@ export default class UserService {
 
     register(credentials: Credentials) {
         // Todo: Register and populate this.user
-        
-       // return new Promise((resolve, reject) => {
+    
+        console.log(credentials);
+
+        // return new Promise((resolve, reject) => {
         //     fetch('/api/login', credentials)
         //     .then(res => {
         //         this.user = new Observable<User>(new User({
