@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { userService } from '../../services'
 import TriangleBackground from '../../components/TriangleBackground';
 
-export default function RegisterView() {
+export default function Register() {
 
     return(
         <TriangleBackground style={styles.container}>
