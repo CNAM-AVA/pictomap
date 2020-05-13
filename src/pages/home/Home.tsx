@@ -1,6 +1,6 @@
 import React from 'react'
-import { useObservable } from '../utils/ObservableHook'
-import { userService } from '../services'
+import { useObservable } from '../../utils/ObservableHook'
+import { userService } from '../../services'
 
 
 export default function home() {
