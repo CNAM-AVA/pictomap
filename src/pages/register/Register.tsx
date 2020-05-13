@@ -1,13 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { userService } from '../../services'
+import TriangleBackground from '../../components/TriangleBackground';
 
 export default function RegisterView() {
 
     return(
-        <View style={styles.container}>
-            <Text>This is the register page</Text>
-        </View>
+        <TriangleBackground style={styles.container}>
+            <Text style={styles.text}>This is the register page</Text>
+        </TriangleBackground>
     )
 }
 
@@ -17,5 +18,8 @@ const styles = StyleSheet.create({
 		backgroundColor: '#fff',
 		alignItems: 'center',
 		justifyContent: 'center',
-	},
+    },
+    text: {
+        color: 'white'
+    }
 });
