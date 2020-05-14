@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, SafeAreaView } from 'react-native';
-import {Header} from 'react-native-elements';
+import { StyleSheet, Text, View, ScrollView, SafeAreaView, Image } from 'react-native';
+import {Header, Icon} from 'react-native-elements';
+import RoundImage from '../../components/RoundImage';
 
 export default function HomeView() {
 
@@ -9,8 +10,8 @@ export default function HomeView() {
         for (let i = 0; i < 10; i++) {
             fakeList.push(
             <View key={i} style={styles.row_grid}>
-                <View style={styles.element_grid_left}/>
-                <View style={styles.element_grid_right}/>
+                <Image source={{}} style={styles.element_grid_left}/>
+                <Image source={{}} style={styles.element_grid_right}/>
             </View>);
         }
 
@@ -21,11 +22,24 @@ export default function HomeView() {
     return(
         <View style={{flex: 1}}>
             <Header
-                leftComponent={{ text: 'Profil', style: { color: '#fff' } }}
+                leftComponent={<RoundImage/>}
                 centerComponent={{ text: 'HOME', style: { color: '#fff' } }}
-                rightComponent={{ text: 'Search', style: { color: '#fff' } }}
+                rightComponent={<Icon
+                    name='plus'
+                    type='font-awesome'
+                    color='white'
+                    underlayColor='transparent'
+                    size={40}
+                    onPress={() => console.log('click on add button')}
+                    
+                />}
+                containerStyle={{
+                    backgroundColor: '#27466A',
+                    height: 70,
+                    paddingBottom: 25
+                }}
             />
-            <Text style={styles.text}>This is the home page</Text>
+            
             <SafeAreaView style={styles.container}>
                 <ScrollView style={styles.scrollView}>
                     <View style={styles.grid}>
@@ -33,6 +47,24 @@ export default function HomeView() {
                     </View>
                 </ScrollView>
             </SafeAreaView>
+            <Icon
+                name='camera'
+                type='font-awesome'
+                color='#27466A'
+                underlayColor='transparent'
+                size={60}
+                onPress={() => console.log('click on add button')}
+                containerStyle={styles.add_icon}
+            />
+            <Icon
+                name='globe'
+                type='font-awesome'
+                color='#27466A'
+                underlayColor='transparent'
+                size={80}
+                onPress={() => console.log('click on map button')}
+                containerStyle={styles.map_icon}
+            />
         </View>
     )
 }
@@ -42,6 +74,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
 		justifyContent: 'center',
         color: 'white'
+    },
+    add_icon: {
+        position: 'absolute',
+        bottom: 30,
+        right: 20,
+    },
+    map_icon: {
+        position: 'absolute',
+        bottom: 20,
+        left: 20,
     },
     container: {
         flex: 1,
@@ -73,5 +115,5 @@ const styles = StyleSheet.create({
         marginRight: 4,
         backgroundColor: "#599688",
         borderRadius: 8,
-    }
+    },
 });
