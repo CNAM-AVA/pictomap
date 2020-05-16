@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { HomeView, ImagePreview } from './src/pages';
-import { Photo } from './src/pages';
+import { HomeView, ImagePreview, Photo, AddFriends } from './src/pages';
+import {  } from './src/pages';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
@@ -23,6 +23,7 @@ export default function App() {
 				<Stack.Screen
 					name="Home"
 					component={HomeView}
+					// On cache le header car on en a déjà un personnalisé
 					options={{headerShown: false}}
 				/>
 				<Stack.Screen
@@ -42,6 +43,11 @@ export default function App() {
 						headerTitle: '',
 						headerTintColor: 'white',
 					}}
+				/>
+				<Stack.Screen
+					name="AddFriends"
+					component={AddFriends}
+					options={{headerShown: false}}
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>

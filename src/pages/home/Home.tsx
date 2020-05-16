@@ -28,7 +28,7 @@ export default function HomeView({ navigation }:any) {
                     color='white'
                     underlayColor='transparent'
                     size={40}
-                    onPress={() => console.log('click on add button')}
+                    onPress={() => navigation.navigate('AddFriends')}
                     
                 />}
                 containerStyle={{
