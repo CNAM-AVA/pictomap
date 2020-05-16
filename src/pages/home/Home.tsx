@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, Image } from 'react-native';
+import { StyleSheet, View, ScrollView, SafeAreaView, Image } from 'react-native';
 import {Header, Icon} from 'react-native-elements';
 import RoundImage from '../../components/RoundImage';
+import 'react-native-gesture-handler';
 
-export default function HomeView() {
-
+export default function HomeView({ navigation }:any) {
     function fakeList() {
         let fakeList:Array<any> = []
         for (let i = 0; i < 10; i++) {
@@ -14,9 +14,7 @@ export default function HomeView() {
                 <Image source={{}} style={styles.element_grid_right}/>
             </View>);
         }
-
         return fakeList;
-        
     }
 
     return(
@@ -53,7 +51,7 @@ export default function HomeView() {
                 color='#27466A'
                 underlayColor='transparent'
                 size={60}
-                onPress={() => console.log('click on add button')}
+                onPress={() => navigation.navigate('Photo')}
                 containerStyle={styles.add_icon}
             />
             <Icon
