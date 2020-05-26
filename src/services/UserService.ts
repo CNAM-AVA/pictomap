@@ -80,4 +80,8 @@ export default class UserService {
     save() {
 
     }
+
+    isAuthenticated() {
+        return this.user.get().isAuthenticated();
+    }
 }

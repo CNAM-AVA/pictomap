@@ -1,10 +1,11 @@
-import React, { useState, SyntheticEvent } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { userService } from '../../services'
 import TriangleBackground from '../../components/TriangleBackground';
 import { Avatar } from 'react-native-elements';
 import { Input } from 'react-native-elements';
 import { Button } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function Register() {
@@ -13,8 +14,10 @@ export default function Register() {
     const [pseudo, setPseudo] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const navigation = useNavigation();
 
     function handleRegister() {
+        console.log(navigation);
         if (validateEmail() && validatePasswords()) {
 
             let credentials = {
@@ -28,6 +31,8 @@ export default function Register() {
                 .then(res => {
                     console.log('authenticated !');
                     console.log(res);
+                    navigation.navigate("Home"); // Todo: navigate
+                    
                 })
                 .catch(err => {
                     console.log(err);

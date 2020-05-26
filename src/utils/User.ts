@@ -39,7 +39,7 @@ export default class User implements UserProps {
 
     }
 
-    public isAuth() {
+    public isAuthenticated() {
         return this.is_authenticated;
     }
 }
