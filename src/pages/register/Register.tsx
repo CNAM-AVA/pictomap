@@ -5,7 +5,6 @@ import TriangleBackground from '../../components/TriangleBackground';
 import { Avatar } from 'react-native-elements';
 import { Input } from 'react-native-elements';
 import { Button } from 'react-native-elements';
-import auth from '@react-native-firebase/auth';
 
 
 export default function Register() {
@@ -25,7 +24,14 @@ export default function Register() {
                 pseudo: pseudo
             }
 
-            userService.register(credentials);
+            userService.register(credentials)
+                .then(res => {
+                    console.log('authenticated !');
+                    console.log(res);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         } else {
             console.log('Error in email or password')
         }
@@ -52,7 +58,7 @@ export default function Register() {
                             rounded
                             title="PM"
                             size="medium"
-                            containerStyle={{alignSelf: 'center', marginBottom: 35}}
+                            containerStyle={{ alignSelf: 'center', marginBottom: 35 }}
                         />
 
                         <Input
@@ -86,8 +92,8 @@ export default function Register() {
                             title="Inscription"
                             type="outline"
                             style={styles.button}
-                            titleStyle={{color: 'white'}}
-                            buttonStyle={{borderColor: 'white'}}
+                            titleStyle={{ color: 'white' }}
+                            buttonStyle={{ borderColor: 'white' }}
                             onPress={handleRegister}
                         />
                         <Text style={styles.text}>J'ai un compte !</Text>
@@ -110,7 +116,7 @@ const styles = StyleSheet.create({
     },
     inner: {
         padding: 24,
-        
+
     },
     input: {
         marginTop: 20,
