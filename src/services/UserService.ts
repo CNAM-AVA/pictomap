@@ -1,5 +1,6 @@
 import { Observable } from "../utils/Observable";
 import { User, Credentials } from "../utils";
+import { auth } from '../utils/firebase';
 
 export default class UserService {
 

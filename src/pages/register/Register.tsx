@@ -5,6 +5,7 @@ import TriangleBackground from '../../components/TriangleBackground';
 import { Avatar } from 'react-native-elements';
 import { Input } from 'react-native-elements';
 import { Button } from 'react-native-elements';
+import auth from '@react-native-firebase/auth';
 
 
 export default function Register() {
