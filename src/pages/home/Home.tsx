@@ -1,26 +1,26 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, SafeAreaView, Image } from 'react-native';
-import {Header, Icon} from 'react-native-elements';
-import RoundImage from '../../components/RoundImage';
+import { Header, Icon } from 'react-native-elements';
+import ProfilePicture from '../../components/ProfilePicture';
 import 'react-native-gesture-handler';
 
-export default function HomeView({ navigation }:any) {
+export default function HomeView({ navigation }: any) {
     function fakeList() {
-        let fakeList:Array<any> = []
+        let fakeList: Array<any> = []
         for (let i = 0; i < 10; i++) {
             fakeList.push(
-            <View key={i} style={styles.row_grid}>
-                <Image source={{}} style={styles.element_grid_left}/>
-                <Image source={{}} style={styles.element_grid_right}/>
-            </View>);
+                <View key={i} style={styles.row_grid}>
+                    <Image source={{}} style={styles.element_grid_left} />
+                    <Image source={{}} style={styles.element_grid_right} />
+                </View>);
         }
         return fakeList;
     }
 
-    return(
-        <View style={{flex: 1}}>
+    return (
+        <View style={{ flex: 1 }}>
             <Header
-                leftComponent={<RoundImage/>}
+                leftComponent={<ProfilePicture actionOnPress={() => navigation.navigate('Profile')} />}
                 centerComponent={{ text: 'HOME', style: { color: '#fff' } }}
                 rightComponent={<Icon
                     name='plus'
@@ -29,7 +29,7 @@ export default function HomeView({ navigation }:any) {
                     underlayColor='transparent'
                     size={40}
                     onPress={() => navigation.navigate('AddFriends')}
-                    
+
                 />}
                 containerStyle={{
                     backgroundColor: '#27466A',
@@ -37,7 +37,7 @@ export default function HomeView({ navigation }:any) {
                     paddingBottom: 25
                 }}
             />
-            
+
             <SafeAreaView style={styles.container}>
                 <ScrollView style={styles.scrollView}>
                     <View style={styles.grid}>
@@ -70,7 +70,7 @@ export default function HomeView({ navigation }:any) {
 const styles = StyleSheet.create({
     text: {
         alignItems: 'center',
-		justifyContent: 'center',
+        justifyContent: 'center',
         color: 'white'
     },
     add_icon: {

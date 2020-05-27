@@ -1,17 +1,18 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { HomeView, ImagePreview, Photo, AddFriends, ShowFriend } from './src/pages';
-import {  } from './src/pages';
+import { HomeView, ImagePreview, Photo, AddFriends } from './src/pages';
+import { } from './src/pages';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
+import Profile from './src/pages/profile/Profile';
 
 const Stack = createStackNavigator();
 
 export default function App() {
 
 	useEffect(() => {
-		
+
 	}, []);
 
 	// optimise l'utilisation de la mémoire de chaque <Stack.Screen/>
@@ -24,7 +25,7 @@ export default function App() {
 					name="Home"
 					component={HomeView}
 					// On cache le header car on en a déjà un personnalisé
-					options={{headerShown: false}}
+					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
 					name="Photo"
@@ -47,20 +48,25 @@ export default function App() {
 				<Stack.Screen
 					name="AddFriends"
 					component={AddFriends}
-					options={{headerShown: false}}
+					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
-					name="ShowFriend"
-					component={ShowFriend}
-					options={{headerShown: false}}
+					name="Profile"
+					component={Profile}
+					options={{ headerShown: false }}
 				/>
+				{/* <Stack.Screen
+					name="ShowFriend"
+					// component={ShowFriend}
+					options={{headerShown: false}}
+				/> */}
 			</Stack.Navigator>
 		</NavigationContainer>
 	);
 }
 
 const styles = StyleSheet.create({
-    photoHeader: {
+	photoHeader: {
 		position: 'absolute',
 		top: 0,
 		right: 0,
