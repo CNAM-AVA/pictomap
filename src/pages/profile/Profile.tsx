@@ -5,6 +5,7 @@ import ProfilePicture from '../../components/ProfilePicture';
 import 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import CardContainer from '../../components/CardContainer';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function Profile() {
 
@@ -40,29 +41,31 @@ export default function Profile() {
 				}}
 			/>
 			<View style={styles.paddedContainer}>
-				<ProfilePicture customStyle={{ alignSelf: "center" }} size="beeg"></ProfilePicture>
+				<ProfilePicture customStyle={{ alignSelf: "center" }} size="big"></ProfilePicture>
 				<CardContainer>
-					<View style={{ flexDirection: "row" }}>
-						<View style={{
-							flex: 2, flexDirection: "row", alignItems: 'center'
-						}}>
-							<Icon
-								size={30}
-								name='camera'
-								type='font-awesome'
-							/>
-							<Text
-								style={{ marginLeft: 10 }}
-							>Mes photos</Text>
+					<TouchableOpacity onPress={() => navigation.navigate('UserPictures')}>
+						<View style={{ flexDirection: "row" }}>
+							<View style={{
+								flex: 2, flexDirection: "row", alignItems: 'center'
+							}}>
+								<Icon
+									size={30}
+									name='camera'
+									type='font-awesome'
+								/>
+								<Text
+									style={{ marginLeft: 10 }}
+								>Mes photos</Text>
+							</View>
+							<View style={{ flexDirection: "row", alignItems: 'center' }}>
+								<Icon
+									size={30}
+									name='chevron-right'
+									type='font-awesome'
+								/>
+							</View>
 						</View>
-						<View style={{ flexDirection: "row", alignItems: 'center' }}>
-							<Icon
-								size={30}
-								name='chevron-right'
-								type='font-awesome'
-							/>
-						</View>
-					</View>
+					</TouchableOpacity>
 				</CardContainer>
 				<CardContainer>
 					<Text h3 style={{ alignSelf: "center" }}>Michael JACKSON</Text>

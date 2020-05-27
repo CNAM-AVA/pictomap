@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { HomeView, ImagePreview, Photo, AddFriends, ShowFriend } from './src/pages';
-import { } from './src/pages';
+import { HomeView, ImagePreview, Photo, AddFriends, ShowFriend, Profile, UserPictures } from './src/pages';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
-import Profile from './src/pages/profile/Profile';
 
 const Stack = createStackNavigator();
 
@@ -58,6 +56,11 @@ export default function App() {
 				<Stack.Screen
 					name="ShowFriend"
 					component={ShowFriend}
+					options={{headerShown: false}}
+				/>
+				<Stack.Screen
+					name="UserPictures"
+					component={UserPictures}
 					options={{headerShown: false}}
 				/>
 			</Stack.Navigator>
