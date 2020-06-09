@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, SafeAreaView, Image } from 'react-native';
+import { StyleSheet, View, ScrollView,  Image, Platform } from 'react-native';
 import { Header, Icon } from 'react-native-elements';
 import ProfilePicture from '../../components/ProfilePicture';
 import 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeView({ navigation }: any) {
     function fakeList() {
@@ -18,7 +19,7 @@ export default function HomeView({ navigation }: any) {
     }
 
     return (
-        <View style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1 }}>
             <Header
                 leftComponent={<ProfilePicture actionOnPress={() => navigation.navigate('Profile')} />}
                 centerComponent={{ text: 'HOME', style: { color: '#fff' } }}
@@ -33,7 +34,7 @@ export default function HomeView({ navigation }: any) {
                 />}
                 containerStyle={{
                     backgroundColor: '#27466A',
-                    height: 70,
+                    height: Platform.OS === 'ios' ? 120 : 70,
                     paddingBottom: 25
                 }}
             />
@@ -63,7 +64,7 @@ export default function HomeView({ navigation }: any) {
                 onPress={() => console.log('click on map button')}
                 containerStyle={styles.map_icon}
             />
-        </View>
+        </SafeAreaView>
     )
 }
 

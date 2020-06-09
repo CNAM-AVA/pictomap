@@ -5,6 +5,7 @@ import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
 import { userService } from './src/services';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ export default function App() {
 	enableScreens();
 
 	return (
+		<SafeAreaProvider>
 		<NavigationContainer>
 			<Stack.Navigator initialRouteName={initialRoute}>
 				<Stack.Screen
@@ -80,6 +82,7 @@ export default function App() {
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>
+		</SafeAreaProvider>
 	);
 }
 

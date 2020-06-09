@@ -52,7 +52,6 @@ export default function Login() {
 
                         <Input
                             labelStyle={styles.input}
-                            placeholder="email@addresse.com"
                             label="Email"
                             onChangeText={value => setEmail(value)}
                             autoCompleteType="email"
@@ -62,7 +61,6 @@ export default function Login() {
                         
                         <Input
                             labelStyle={styles.input}
-                            placeholder="Mot de passe"
                             label="Mot de passe"
                             secureTextEntry
                             onChangeText={value => setPassword(value)}
