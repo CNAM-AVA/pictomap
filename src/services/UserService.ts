@@ -23,7 +23,6 @@ export default class UserService {
         })
     }
 
-
     user = new Observable<User>(new User({
         uuid: '',
         name: '',
@@ -35,7 +34,11 @@ export default class UserService {
         is_authenticated: false,
     }));
 
-    // Firebase login
+    /**
+     * Sign in the user.
+     * Populate local user object.
+     * @param credentials
+     */
     login(credentials: Credentials) {
         return new Promise((resolve, reject) => {
 
@@ -74,6 +77,12 @@ export default class UserService {
         });
     }
 
+    /**
+     * Registers the user in firebase's auth system.
+     * Adds its entry into firestore.
+     * Populate local user object
+     * @param credentials 
+     */
     register(credentials: Credentials) {
         return new Promise((resolve, reject) => {
             auth.createUserWithEmailAndPassword(credentials.email, credentials.password)
@@ -99,6 +108,32 @@ export default class UserService {
                     reject(err);
                 })
         });
+    }
+
+    /**
+     * Logout the user from firebase's auth system.
+     * Clears the local user object
+     */
+    logout() {
+        return new Promise((resolve, reject) => {
+            auth.signOut()
+            .then(() => {
+                this.user = new Observable<User>(new User({
+                    uuid: '',
+                    name: '',
+                    mail: '',
+                    profile_picture: '',
+                    indiana_jones: false,
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    is_authenticated: false,
+                }));
+                resolve(true);
+            })
+            .catch(() => {
+                reject(false);
+            })
+        })
     }
 
     isAuthenticated() {
