@@ -61,6 +61,8 @@ export default function ProfileEdit() {
 					defaultValue={courriel}
 					placeholder="Courriel"
 					label="Courriel"
+					autoCompleteType="email"
+					keyboardType="email-address"
 					onChangeText={value => setCourriel(value)}
 				/>
 				<Input
@@ -69,6 +71,8 @@ export default function ProfileEdit() {
 					placeholder="Mot de passe"
 					label="Mot de passe"
 					onChangeText={value => setNewPass(value)}
+					secureTextEntry
+					autoCompleteType="password"
 				/>
 				<Input
 					containerStyle={styles.inputContainerStyle}
@@ -76,6 +80,8 @@ export default function ProfileEdit() {
 					placeholder="Confirmation"
 					label="Confirmation"
 					onChangeText={value => setConfirmPass(value)}
+					secureTextEntry
+					autoCompleteType="password"
 				/>
 				<Button
 					containerStyle={{ marginTop: 16 }}
