@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Image, View } from 'react-native';
 import { Icon } from 'react-native-elements';
+import { pictureService } from '../../services'
 
 export default function ImagePreview({route, navigation}:any) {
     const [state, setState] = useState<any>({});
@@ -8,6 +9,8 @@ export default function ImagePreview({route, navigation}:any) {
     const myPhoto = route.params.photo;
 
     console.log(myPhoto);
+
+    console.log("test: " + pictureService.getUser());
 
     return (
         <View style={styles.container}>
