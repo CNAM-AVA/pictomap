@@ -6,10 +6,19 @@ import 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import CardContainer from '../../components/CardContainer';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { userService } from '../../services';
 
 export default function Profile() {
 
 	const navigation = useNavigation();
+
+	function handleLogout() {
+		userService.logout()
+		.then(() => {
+			navigation.navigate('Login');
+		})
+		.catch(() => console.log("Somethign went wrong during logout."));
+	}
 
 	return (
 		<View style={styles.container}>
@@ -78,6 +87,7 @@ export default function Profile() {
 						titleStyle={{ color: "red" }}
 						title="Déconnexion"
 						type="outline"
+						onPress={handleLogout}
 					/>
 				</CardContainer>
 			</View>
