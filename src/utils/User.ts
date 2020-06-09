@@ -49,9 +49,12 @@ export default class User implements UserProps {
                 updated_at: this.updated_at
             })
             .then(() => {
-                console.log("user saved in database")
+                resolve(true);
             })
-            .catch((err) => console.log("error writing user: ", err));
+            .catch((err) =>  {
+                reject(err)
+                console.log("error writing user: ", err)
+            });
         })
     }
 
