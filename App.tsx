@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { HomeView, ImagePreview, Photo, AddFriends, RegisterView, LoginView, ShowFriend, Profile, UserPictures, ProfileEdit } from './src/pages';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -10,7 +10,7 @@ const Stack = createStackNavigator();
 
 export default function App() {
 
-	const [initialRoute, setInitialRoute] = useState(userService.isAuthenticated() ? 'Home': 'Register');
+	const [initialRoute, setInitialRoute] = useState(userService.isAuthenticated() ? 'Home' : 'Login');
 
 	// optimise l'utilisation de la mémoire de chaque <Stack.Screen/>
 	enableScreens();
@@ -55,27 +55,28 @@ export default function App() {
 				<Stack.Screen
 					name="ProfileEdit"
 					component={ProfileEdit}
-					options={{ headerShown: false }}
+					options={{ headerShown: false }} />
+				<Stack.Screen
 					name="ShowFriend"
 					component={ShowFriend}
-					options={{headerShown: false}}
+					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
 					name="UserPictures"
 					component={UserPictures}
-					options={{headerShown: false}}
+					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
 					name="Register"
 					component={RegisterView}
 					// On cache le header car on en a déjà un personnalisé
-					options={{headerShown: false}}
+					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
 					name="Login"
 					component={LoginView}
 					// On cache le header car on en a déjà un personnalisé
-					options={{headerShown: false}}
+					options={{ headerShown: false }}
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>
