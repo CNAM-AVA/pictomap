@@ -1,3 +1,5 @@
+import { firestore } from '../utils/firebase';
+
 interface UserProps {
     uuid: string,
     name: string,
@@ -36,10 +38,27 @@ export default class User implements UserProps {
     }
 
     public save() {
-
+        return new Promise((resolve, reject) => {
+            firestore.collection("users").doc(this.uuid).set({
+                uuid: this.uuid,
+                name: this.name,
+                mail: this.mail,
+                profile_picture: this.profile_picture,
+                indiana_jones: this.indiana_jones,
+                created_at: this.created_at,
+                updated_at: this.updated_at
+            })
+            .then(() => {
+                resolve(true);
+            })
+            .catch((err) =>  {
+                reject(err)
+                console.log("error writing user: ", err)
+            });
+        })
     }
 
-    public isAuth() {
+    public isAuthenticated() {
         return this.is_authenticated;
     }
 }

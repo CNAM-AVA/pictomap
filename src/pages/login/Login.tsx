@@ -8,46 +8,26 @@ import { Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-export default function Register() {
+export default function Login() {
 
     const [email, setEmail] = useState<string>('');
-    const [pseudo, setPseudo] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [confirmPassword, setConfirmPassword] = useState<string>('');
     const navigation = useNavigation();
 
-    function handleRegister() {
-        if (validateEmail() && validatePasswords()) {
+    function handleLogin() {
+        let credentials = {
+            email: email,
+            password: password
+        };
 
-            let credentials = {
-                email: email,
-                password: password,
-                password_confirm: confirmPassword,
-                pseudo: pseudo
-            }
-
-            userService.register(credentials)
-                .then(res => {
-                    console.log('authenticated !');
-                    console.log(res);
-                    navigation.navigate("Home");
-                    
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-        } else {
-            console.log('Error in email or password')
-        }
-    }
-
-    function validateEmail() {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
-    }
-
-    function validatePasswords() {
-        return password === confirmPassword;
+        userService.login(credentials)
+        .then((res) => {
+            console.log(res);
+            navigation.navigate("Home");
+        })
+        .catch((err) => {
+            console.log(err);
+        })
     }
 
     return (
@@ -71,12 +51,7 @@ export default function Register() {
                             label="Email"
                             onChangeText={value => setEmail(value)}
                         />
-                        <Input
-                            labelStyle={styles.input}
-                            placeholder="Pseudo"
-                            label="Pseudo"
-                            onChangeText={value => setPseudo(value)}
-                        />
+                        
                         <Input
                             labelStyle={styles.input}
                             placeholder="Mot de passe"
@@ -84,26 +59,19 @@ export default function Register() {
                             secureTextEntry
                             onChangeText={value => setPassword(value)}
                         />
-                        <Input
-                            labelStyle={styles.input}
-                            placeholder="Confirmation"
-                            label="Confirmation"
-                            secureTextEntry
-                            onChangeText={value => setConfirmPassword(value)}
-                        />
 
                         <Button
-                            title="Inscription"
+                            title="Connexion"
                             type="outline"
                             style={styles.button}
                             titleStyle={{ color: 'white' }}
                             buttonStyle={{ borderColor: 'white' }}
-                            onPress={handleRegister}
+                            onPress={handleLogin}
                         />
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate("Login")}
+                         <TouchableOpacity
+                            onPress={() => navigation.navigate("Register")}
                         >
-                            <Text style={styles.text}>J'ai un compte !</Text>
+                            <Text style={styles.text}>Je n'ai pas de compte !</Text>
                         </TouchableOpacity>
                     </View>
                 </TouchableWithoutFeedback>
