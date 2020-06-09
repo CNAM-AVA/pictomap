@@ -4,7 +4,7 @@ import { Header, Icon } from 'react-native-elements';
 import ProfilePicture from '../../components/ProfilePicture';
 import 'react-native-gesture-handler';
 
-export default function HomeView({ navigation }: any) {
+export default function UserPictures({ navigation }: any) {
     function fakeList() {
         let fakeList: Array<any> = []
         for (let i = 0; i < 10; i++) {
@@ -20,17 +20,25 @@ export default function HomeView({ navigation }: any) {
     return (
         <View style={{ flex: 1 }}>
             <Header
-                leftComponent={<ProfilePicture actionOnPress={() => navigation.navigate('Profile')} />}
-                centerComponent={{ text: 'HOME', style: { color: '#fff' } }}
-                rightComponent={<Icon
-                    name='plus'
+                leftComponent={<Icon
+                    name='arrow-left'
                     type='font-awesome'
                     color='white'
                     underlayColor='transparent'
                     size={40}
-                    onPress={() => navigation.navigate('AddFriends')}
+                    onPress={() => navigation.goBack()}
 
                 />}
+                centerComponent={{ text: 'Mes photos', style: { color: '#fff' } }}
+                // rightComponent={<Icon
+                //     name='plus'
+                //     type='font-awesome'
+                //     color='white'
+                //     underlayColor='transparent'
+                //     size={40}
+                //     onPress={() => navigation.navigate('AddFriends')}
+
+                // />}
                 containerStyle={{
                     backgroundColor: '#27466A',
                     height: 70,
@@ -45,7 +53,7 @@ export default function HomeView({ navigation }: any) {
                     </View>
                 </ScrollView>
             </SafeAreaView>
-            <Icon
+            {/* <Icon
                 name='camera'
                 type='font-awesome'
                 color='#27466A'
@@ -62,7 +70,7 @@ export default function HomeView({ navigation }: any) {
                 size={80}
                 onPress={() => console.log('click on map button')}
                 containerStyle={styles.map_icon}
-            />
+            /> */}
         </View>
     )
 }
