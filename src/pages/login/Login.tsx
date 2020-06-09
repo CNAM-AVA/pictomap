@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { StyleSheet, Text, View, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { userService } from '../../services'
 import TriangleBackground from '../../components/TriangleBackground';
@@ -7,12 +7,15 @@ import { Input } from 'react-native-elements';
 import { Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import DropdownAlert from 'react-native-dropdownalert';
 
 export default function Login() {
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const navigation = useNavigation();
+    const dropDown = useRef<DropdownAlert>(null);
+
 
     function handleLogin() {
         let credentials = {
@@ -27,11 +30,13 @@ export default function Login() {
         })
         .catch((err) => {
             console.log(err);
+            dropDown.current!.alertWithType("error", "Error", err.message);
         })
     }
 
     return (
         <TriangleBackground style={styles.container}>
+            <DropdownAlert ref={dropDown} />
             <KeyboardAvoidingView
                 behavior={Platform.OS == "ios" ? "padding" : "height"}
                 style={styles.keyboardAvoid}
@@ -50,6 +55,9 @@ export default function Login() {
                             placeholder="email@addresse.com"
                             label="Email"
                             onChangeText={value => setEmail(value)}
+                            autoCompleteType="email"
+                            keyboardType="email-address"
+                            inputStyle={{color: "white"}}
                         />
                         
                         <Input
@@ -58,6 +66,8 @@ export default function Login() {
                             label="Mot de passe"
                             secureTextEntry
                             onChangeText={value => setPassword(value)}
+                            inputStyle={{color: "white"}}
+                            autoCompleteType="password"
                         />
 
                         <Button

@@ -23,7 +23,6 @@ export default class UserService {
         })
     }
 
-
     user = new Observable<User>(new User({
         uuid: '',
         name: '',
@@ -35,45 +34,56 @@ export default class UserService {
         is_authenticated: false,
     }));
 
-    // Firebase login
+    /**
+     * Sign in the user.
+     * Populate local user object.
+     * @param credentials
+     */
     login(credentials: Credentials) {
         return new Promise((resolve, reject) => {
 
             auth.signInWithEmailAndPassword(credentials.email, credentials.password)
-            .then(res => {
-                let user = res.user!;
+                .then(res => {
+                    let user = res.user!;
 
-                console.log(user);
+                    console.log("test");
 
-                firestore.collection("users").doc(user.uid).get()
-                .then((doc) => {
+                    firestore.collection("users").doc(user.uid).get()
+                        .then((doc) => {
 
-                    if (!doc.exists)
-                        reject("No such document");
-                        
-                        
-                    let data = doc.data();
-                    this.user = new Observable<User>(new User({
-                        uuid: user.uid,
-                        name: user.displayName!,
-                        mail: user.email!,
-                        profile_picture: user.photoURL!,
-                        indiana_jones: data!.indiana_jones,
-                        created_at: data!.created_at,
-                        updated_at: data!.updated_at,
-                        is_authenticated: true
-                    }))
-                    resolve(this.user);
+                            if (!doc.exists)
+                                reject("No such document");
+
+
+                            let data = doc.data();
+                            this.user = new Observable<User>(new User({
+                                uuid: user.uid,
+                                name: data!.name,
+                                mail: user.email!,
+                                profile_picture: data!.profile_picture,
+                                indiana_jones: data!.indiana_jones,
+                                created_at: data!.created_at,
+                                updated_at: data!.updated_at,
+                                is_authenticated: true
+                            }))
+
+                            resolve(this.user);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        })
+                }).catch(err => {
+                    reject(err);
                 })
-                .catch((err) => {
-                    console.log(err);
-                })
-            }).catch(err => {
-                reject(err);
-            })
         });
     }
 
+    /**
+     * Registers the user in firebase's auth system.
+     * Adds its entry into firestore.
+     * Populate local user object
+     * @param credentials 
+     */
     register(credentials: Credentials) {
         return new Promise((resolve, reject) => {
             auth.createUserWithEmailAndPassword(credentials.email, credentials.password)
@@ -101,7 +111,37 @@ export default class UserService {
         });
     }
 
+    /**
+     * Logout the user from firebase's auth system.
+     * Clears the local user object
+     */
+    logout() {
+        return new Promise((resolve, reject) => {
+            auth.signOut()
+            .then(() => {
+                this.user = new Observable<User>(new User({
+                    uuid: '',
+                    name: '',
+                    mail: '',
+                    profile_picture: '',
+                    indiana_jones: false,
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    is_authenticated: false,
+                }));
+                resolve(true);
+            })
+            .catch(() => {
+                reject(false);
+            })
+        })
+    }
+
     isAuthenticated() {
-        return this.user.get().isAuthenticated();
+        return this.getUser().isAuthenticated();
+    }
+
+    getUser(): User {
+        return this.user.get();
     }
 }
