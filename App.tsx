@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { HomeView, ImagePreview, Photo, AddFriends, RegisterView } from './src/pages';
+import { HomeView, ImagePreview, Photo, AddFriends, RegisterView, LoginView } from './src/pages';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
@@ -50,6 +50,12 @@ export default function App() {
 				<Stack.Screen
 					name="Register"
 					component={RegisterView}
+					// On cache le header car on en a déjà un personnalisé
+					options={{headerShown: false}}
+				/>
+				<Stack.Screen
+					name="Login"
+					component={LoginView}
 					// On cache le header car on en a déjà un personnalisé
 					options={{headerShown: false}}
 				/>
