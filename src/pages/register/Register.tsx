@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, Text, View, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, TextInput } from 'react-native';
 import { userService } from '../../services'
 import TriangleBackground from '../../components/TriangleBackground';
 import { Avatar } from 'react-native-elements';
@@ -7,6 +7,7 @@ import { Input } from 'react-native-elements';
 import { Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import DropdownAlert from 'react-native-dropdownalert';
 
 export default function Register() {
 
@@ -15,43 +16,32 @@ export default function Register() {
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const navigation = useNavigation();
+    const dropDown = useRef<DropdownAlert>(null);
 
     function handleRegister() {
-        if (validateEmail() && validatePasswords()) {
 
-            let credentials = {
-                email: email,
-                password: password,
-                password_confirm: confirmPassword,
-                pseudo: pseudo
-            }
-
-            userService.register(credentials)
-                .then(res => {
-                    console.log('authenticated !');
-                    console.log(res);
-                    navigation.navigate("Home");
-                    
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-        } else {
-            console.log('Error in email or password')
+        let credentials = {
+            email: email,
+            password: password,
+            password_confirm: confirmPassword,
+            pseudo: pseudo
         }
-    }
 
-    function validateEmail() {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
-    }
-
-    function validatePasswords() {
-        return password === confirmPassword;
+        userService.register(credentials)
+            .then(res => {
+                console.log('authenticated !');
+                console.log(res);
+                navigation.navigate("Home");
+            })
+            .catch(err => {
+                console.log(err);
+                dropDown.current!.alertWithType('error', 'Erreur', err.message);
+            });
     }
 
     return (
         <TriangleBackground style={styles.container}>
+            <DropdownAlert ref={dropDown} />
             <KeyboardAvoidingView
                 behavior={Platform.OS == "ios" ? "padding" : "height"}
                 style={styles.keyboardAvoid}
@@ -67,29 +57,31 @@ export default function Register() {
 
                         <Input
                             labelStyle={styles.input}
-                            placeholder="email@addresse.com"
                             label="Email"
                             onChangeText={value => setEmail(value)}
+                            keyboardType="email-address"
+                            inputStyle={{ color: "white" }}
                         />
                         <Input
                             labelStyle={styles.input}
-                            placeholder="Pseudo"
                             label="Pseudo"
                             onChangeText={value => setPseudo(value)}
+                            inputStyle={{ color: "white" }}
                         />
                         <Input
+
                             labelStyle={styles.input}
-                            placeholder="Mot de passe"
                             label="Mot de passe"
                             secureTextEntry
                             onChangeText={value => setPassword(value)}
+                            inputStyle={{ color: "white" }}
                         />
                         <Input
                             labelStyle={styles.input}
-                            placeholder="Confirmation"
                             label="Confirmation"
                             secureTextEntry
                             onChangeText={value => setConfirmPassword(value)}
+                            inputStyle={{ color: "white" }}
                         />
 
                         <Button
