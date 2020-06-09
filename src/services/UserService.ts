@@ -46,14 +46,11 @@ export default class UserService {
                 .then(res => {
                     let user = res.user!;
 
-                    console.log("test");
-
                     firestore.collection("users").doc(user.uid).get()
                         .then((doc) => {
 
                             if (!doc.exists)
                                 reject("No such document");
-
 
                             let data = doc.data();
                             this.user = new Observable<User>(new User({
@@ -118,22 +115,22 @@ export default class UserService {
     logout() {
         return new Promise((resolve, reject) => {
             auth.signOut()
-            .then(() => {
-                this.user = new Observable<User>(new User({
-                    uuid: '',
-                    name: '',
-                    mail: '',
-                    profile_picture: '',
-                    indiana_jones: false,
-                    created_at: new Date(),
-                    updated_at: new Date(),
-                    is_authenticated: false,
-                }));
-                resolve(true);
-            })
-            .catch(() => {
-                reject(false);
-            })
+                .then(() => {
+                    this.user = new Observable<User>(new User({
+                        uuid: '',
+                        name: '',
+                        mail: '',
+                        profile_picture: '',
+                        indiana_jones: false,
+                        created_at: new Date(),
+                        updated_at: new Date(),
+                        is_authenticated: false,
+                    }));
+                    resolve(true);
+                })
+                .catch(() => {
+                    reject(false);
+                })
         })
     }
 
@@ -143,5 +140,17 @@ export default class UserService {
 
     getUser(): User {
         return this.user.get();
+    }
+
+    updateCurrentUser(data: any) {
+        this.updateUser(this.getUser(), data);
+    }
+
+    updateUser(u: User, data: any) {
+        if (data.mail !== u.mail) auth.currentUser?.updateEmail(data.mail);
+        if (data.password) auth.currentUser?.updatePassword(data.password);
+        let newUser: User = new User({ ...u, ...data });
+        console.log(this.getUser())
+        newUser.save();
     }
 }
