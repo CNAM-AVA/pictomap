@@ -10,14 +10,14 @@ export default function ProfilePicture(props: any) {
         <Avatar
             size="xlarge"
             rounded
-            style={[styles.round_image, styles[size], customStyle]}
+            containerStyle={[styles.round_image, styles[size], customStyle]}
             source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/pictomap-9aad7.appspot.com/o/MJ.jpg?alt=media&token=657c33f3-af50-4f7f-be8c-1141a5e22b6f' }}
             onPress={props.actionOnPress}
         />
     )
 }
 
-const styles = StyleSheet.create({
+const styles:any = StyleSheet.create({
     round_image: {
         // flex: 1,
         backgroundColor: '#27466A',
