@@ -21,16 +21,15 @@ export default function Profile() {
 					underlayColor='transparent'
 					size={40}
 					onPress={() => navigation.goBack()}
-
 				/>}
 				rightComponent={
 					<Icon
-						name='plus'
+						name='edit'
 						type='font-awesome'
 						color='white'
 						underlayColor='transparent'
 						size={40}
-						onPress={() => navigation.navigate('AddFriends')}
+						onPress={() => navigation.navigate('ProfileEdit')}
 					/>
 				}
 				containerStyle={{

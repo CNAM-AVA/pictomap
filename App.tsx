@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { HomeView, ImagePreview, Photo, AddFriends, RegisterView, LoginView, ShowFriend, Profile, UserPictures } from './src/pages';
+import { HomeView, ImagePreview, Photo, AddFriends, RegisterView, LoginView, ShowFriend, Profile, UserPictures, ProfileEdit } from './src/pages';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
@@ -53,6 +53,9 @@ export default function App() {
 					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
+					name="ProfileEdit"
+					component={ProfileEdit}
+					options={{ headerShown: false }}
 					name="ShowFriend"
 					component={ShowFriend}
 					options={{headerShown: false}}
