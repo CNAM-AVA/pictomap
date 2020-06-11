@@ -40,7 +40,7 @@ export default function Photo( { navigation }:any) {
             const photo = await cameraRef.takePictureAsync();
             // setState({photo})
             // console.log(photo);
-            navigation.navigate('ImagePreview', {photo: photo});
+            navigation.navigate('ImagePreview', {photo: photo, send: true});
         }
     }
 
