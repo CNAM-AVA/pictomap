@@ -1,67 +1,138 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
-import TriangleBackground from '../../components/TriangleBackground';
-import { Card, Icon, Input, ListItem, Divider } from 'react-native-elements';
+import React, { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Icon, Header, Button, Text } from 'react-native-elements';
+import ProfilePicture from '../../components/ProfilePicture';
+import 'react-native-gesture-handler';
+import CardContainer from '../../components/CardContainer';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { userService } from '../../services';
 
-export default function ShowFriend({navigation}:any) {
-    const [state, setState] = React.useState();
+export default function ShowFriend({route, navigation}:any, ) {
+    const [user, setUser] = React.useState<any>({
+        created_at: {
+            nanoseconds: "000000001",
+            seconds: "000000001",
+          },
+          indiana_jones: false,
+          mail: "",
+          name: "NautilusJungle",
+          profile_picture: null,
+          updated_at: {
+            nanoseconds: "684000000",
+            seconds: "1591695851",
+          },
+          uuid: "",
+    });
 
-    return(
-        <TriangleBackground style={styles.container}>
-            <Text>Vue Ami</Text>
-        </TriangleBackground>
-    )
+    const user_uuid = route.params.userId;
+
+    useEffect(() => {
+        getUser();
+    }, []);
+
+    function getUser(){
+        userService.getUserById(user_uuid)
+        .then((res) => {
+            setUser(res);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
+
+    function deleteFriend(friend_uuid: string){
+        userService.deleteFriend(friend_uuid)
+        .then((res) => {
+            console.log(res);
+            navigation.navigate('AddFriends');
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
+
+    function stringDate(timestamp:any){
+        let date = new Date(timestamp.seconds*1000);
+        return date.toLocaleDateString('fr-FR');
+    }
+
+    return (
+		<View style={styles.container}>
+			<Header
+				leftComponent={<Icon
+					name='arrow-left'
+					type='font-awesome'
+					color='white'
+					underlayColor='transparent'
+					size={40}
+					onPress={() => navigation.goBack()}
+				/>}
+				containerStyle={{
+					backgroundColor: '#27466A',
+					height: 70,
+					paddingBottom: 25,
+                    shadowColor: 'transparent',
+				}}
+			/>
+			<View style={styles.paddedContainer}>
+                <ProfilePicture 
+                customStyle={{ alignSelf: "center" }} 
+                size="big"
+                uri={user.profile_picture}
+                title={user.name[0]}
+                ></ProfilePicture>
+				<CardContainer>
+					<TouchableOpacity onPress={() => navigation.navigate('UserPictures')}>
+						<View style={{ flexDirection: "row" }}>
+							<View style={{
+								flex: 2, flexDirection: "row", alignItems: 'center'
+							}}>
+								<Icon
+									size={30}
+									name='camera'
+									type='font-awesome'
+								/>
+								<Text
+									style={{ marginLeft: 10 }}
+								>Photos</Text>
+							</View>
+							<View style={{ flexDirection: "row", alignItems: 'center' }}>
+								<Icon
+									size={30}
+									name='chevron-right'
+									type='font-awesome'
+								/>
+							</View>
+						</View>
+					</TouchableOpacity>
+				</CardContainer>
+				<CardContainer>
+					<Text h3 style={{ alignSelf: "center" }}>{user.name}</Text>
+					<Text style={{ alignSelf: "center", marginBottom: 8 }}>{user.mail}</Text>
+					<Text style={{ alignSelf: "flex-start" }}>Photos prises: 123</Text>
+					<Text style={{ alignSelf: "flex-start" }}>Photos trouvées: 123</Text>
+					<Text style={{ alignSelf: "flex-start" }}>Inscrit le: {stringDate(user.created_at)}</Text>
+					<Button
+						containerStyle={{ marginTop: 16 }}
+						buttonStyle={{ borderColor: "red" }}
+						titleStyle={{ color: "red" }}
+						title="Supprimer"
+						type="outline"
+						onPress={() => deleteFriend(user.uuid)}
+					/>
+				</CardContainer>
+			</View>
+		</View >
+	)
 }
 
 const styles = StyleSheet.create({
 	container: {
-        flex: 1,
-        // flexDirection: 'column',
-    },
-    searchBar:{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 15,
-    },
-    searchContainer:{
-        // paddingLeft: 15,
-        paddingRight: 15,
-        paddingTop: 8,
-        paddingBottom: 8,
-        flex: 0.95,
-        backgroundColor: 'white',
-        borderRadius: 30,
-    },
-    searchInput:{
-        height: 40,
-        paddingLeft: 10,
-        color: 'grey',
-    },
-    searchIcon: {
-    },
-    backButton: {
-        flex: 0.10,
-        alignItems: 'flex-end',
-        paddingRight: 8,
-    },
-    text: {
-        color: 'white',
-        borderRadius: 30,
-    },
-    cardContainer: {
-        borderRadius: 30,
-        flex: 1,
-        marginBottom: 20,
-        marginTop: 0,
-    },
-    user: {
-
-    },
-    image: {
-
-    },
-    name: {
-
-    },
+		flex: 1,
+		backgroundColor: "#27466A",
+	},
+	paddedContainer: {
+		padding: 10,
+	}
 });
+
