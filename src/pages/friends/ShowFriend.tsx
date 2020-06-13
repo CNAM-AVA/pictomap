@@ -82,7 +82,7 @@ export default function ShowFriend({route, navigation}:any, ) {
                 title={user.name[0]}
                 ></ProfilePicture>
 				<CardContainer>
-					<TouchableOpacity onPress={() => navigation.navigate('UserPictures')}>
+					<TouchableOpacity onPress={() => console.log('/!\\TODO: Show discovered friend\'s pictures')}>
 						<View style={{ flexDirection: "row" }}>
 							<View style={{
 								flex: 2, flexDirection: "row", alignItems: 'center'
