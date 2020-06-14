@@ -2,10 +2,19 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import TriangleBackground from '../../components/TriangleBackground';
 import { Card, Icon, Input, ListItem, Divider } from 'react-native-elements';
+import { userService } from '../../services';
+import { User } from '../../utils';
 
 export default function AddFriends({navigation}:any) {
     const [value, setText] = React.useState('');
     const [state, setState] = React.useState({isSearching: false});
+    const [searchResult, setSearchResult] = React.useState<any>();
+    const [friendList, setFriendList] = React.useState<any>([]);
+
+    useEffect(() => {
+        // getFriends();
+        getFriends();
+    }, [searchResult]);
 
     const usersList = [
         {
@@ -121,72 +130,98 @@ export default function AddFriends({navigation}:any) {
         }
     ]);
 
-    function onChangeText(text:any) {
-        console.log("texte1: ",text);
-        console.log("length texte1: ", text.length);
+    function getFriends(){
+        userService.getFriends()
+        .then((res:any) => {
+            setFriendList(res);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
 
+    function showUser(searchedName: string){
+        userService.searchUser(searchedName)
+        .then((res) => {
+            setSearchResult(res);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
+
+    function addFriend(friend_uuid: string){
+        userService.addFriend(friend_uuid)
+        .then((res) => {
+            console.log('sucessfully added : '+JSON.stringify(res));
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
+
+    function onChangeText(text:any) {
         if(text.length === 0)
             setState({isSearching: false});
         else
             setState({isSearching: true});
-
         setText(text);
-        console.log("isSearching: ", state.isSearching);
-        console.log("texte2: ",text);
-        console.log(value);
+        showUser(text);
     }
 
-    function onAddFriend(friend:any, index:any) {
-        console.log(`${friend.name} has been added to your friends list !`)
-        let newUsers = users;
-        newUsers[index] = {...newUsers[index], ...{isAFriend: true}};
-        setUsers([...newUsers]);
+    function onAddFriend(friend:any) {
+        console.log(`${friend} has been added to your friends list !`)
+        setSearchResult({...searchResult, ...{isAFriend: true}});
+        addFriend(friend);
+        // let newUsers = users;
+        // newUsers[index] = {...newUsers[index], ...{isAFriend: true}};
+        // setUsers([...newUsers]);
     }
 
-    function showList(list:any){
-        return(
-            list.map((u:any, i:any) => {
-                return(
-                    <View key={i}>
-                        <ListItem
-                            leftAvatar={ u.avatar_url ? {source: {uri: u.avatar_url}} : {title: u.name[0]}}
-                            title={u.name}
-                            containerStyle={{paddingLeft: 0, paddingRight: 0}}
-                            rightElement={u.isAFriend 
-                            ? 
-                            <Icon
-                                name='check'
-                                type='font-awesome'
-                                color='green'
-                                underlayColor='transparent'
-                                size={30}
-                                onPress={() => console.log(`${u.name} is already your friend`)}
-                            />
-                            :
-                            <Icon
-                                name='plus'
-                                type='font-awesome'
-                                color='grey'
-                                underlayColor='transparent'
-                                size={30}
-                                onPress={() => onAddFriend(u, i)}
-                            />
-                        }
-                        />
-                        <Divider style={{ backgroundColor: 'grey' }}/>
-                    </View>
-                );
-            })
-        )
+    function showSearchResult(user:any){
+        if(!user)
+            return <Text style={styles.empty}>Aucun résultat</Text>;
+        return (
+            <View>
+                <ListItem
+                    leftAvatar={ user.profile_picture ? {source: {uri: user.profile_picture}} : {title: user.name[0]}}
+                    title={user.name}
+                    containerStyle={{paddingLeft: 0, paddingRight: 0}}
+                    rightElement={user.isAFriend 
+                    ? 
+                    <Icon
+                        name='check'
+                        type='font-awesome'
+                        color='green'
+                        underlayColor='transparent'
+                        size={30}
+                        onPress={() => console.log(`${user.name} is already your friend`)}
+                    />
+                    :
+                    <Icon
+                        name='plus'
+                        type='font-awesome'
+                        color='grey'
+                        underlayColor='transparent'
+                        size={30}
+                        onPress={() => onAddFriend(user.uuid)}
+                    />
+                    }
+                />
+                <Divider style={{ backgroundColor: 'grey' }}/>
+            </View>
+        );
     }
 
     function showFriendList(list:any){
+        if(!list)
+            return (<Text style={styles.empty}>Aucun ami</Text>);
         return(
             list.map((u:any, i:any) => {
                 return(
                     <View key={i}>
                         <ListItem
-                            leftAvatar={ u.avatar_url ? {source: {uri: u.avatar_url}} : {title: u.name[0]}}
+                            leftAvatar={ u.profile_picture ? {source: {uri: u.profile_picture}} : {title: u.name[0]}}
                             title={u.name}
                             containerStyle={{paddingLeft: 0, paddingRight: 0}}
                             // rightElement={<Icon
@@ -197,7 +232,7 @@ export default function AddFriends({navigation}:any) {
                             //     size={30}
                             //     onPress={() => console.log(`add friend ${u.name}`)}
                             // />}
-                            onPress={() => navigation.navigate('ShowFriend')}
+                            onPress={() => navigation.navigate('ShowFriend', {userId: u.uuid})}
                         />
                         <Divider style={{ backgroundColor: 'grey' }}/>
                     </View>
@@ -241,8 +276,8 @@ export default function AddFriends({navigation}:any) {
                 <ScrollView>
                 {
                     state.isSearching ? 
-                    showList(users)
-                    : showFriendList(myFriends)
+                    showSearchResult(searchResult)
+                    : showFriendList(friendList)
                 }
                 </ScrollView>
             </Card>
@@ -291,6 +326,12 @@ const styles = StyleSheet.create({
         flex: 1,
         marginBottom: 20,
         marginTop: 0,
+    },
+    empty: {
+        fontSize: 20,
+        // fontWeight: 'bold',
+        marginTop: 10,
+        alignSelf: 'center'
     },
     user: {
 
