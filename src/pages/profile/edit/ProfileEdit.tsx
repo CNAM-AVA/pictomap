@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text, Header, Icon, Input } from 'react-native-elements';
+import { Header, Icon, Input, Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import ProfilePicture from '../../../components/ProfilePicture';
 import CardContainer from '../../../components/CardContainer';
@@ -13,6 +13,20 @@ export default function ProfileEdit() {
 	let user = userService.getUser();
 
 	const [pseudo, setPseudo] = useState(user.name);
+	const [courriel, setCourriel] = useState(user.mail);
+	const [newPass, setNewPass] = useState("");
+	const [confirmPass, setConfirmPass] = useState("");
+
+	function save() {
+		let data = {
+			name: pseudo,
+			mail: courriel
+		};
+		if (newPass && newPass === confirmPass) {
+			data = { ...data, ...{ password: newPass } }
+		}
+		userService.updateCurrentUser(data);
+	}
 
 	return (
 		<View style={styles.container}>
@@ -38,11 +52,45 @@ export default function ProfileEdit() {
 			<CardContainer>
 				<Input
 					defaultValue={pseudo}
-					placeholder="email@addresse.com"
+					placeholder="Pseudo"
 					label="Pseudo"
 					onChangeText={value => setPseudo(value)}
 				/>
-				<Text>{pseudo}</Text>
+				<Input
+					containerStyle={styles.inputContainerStyle}
+					defaultValue={courriel}
+					placeholder="Courriel"
+					label="Courriel"
+					autoCompleteType="email"
+					keyboardType="email-address"
+					onChangeText={value => setCourriel(value)}
+				/>
+				<Input
+					containerStyle={styles.inputContainerStyle}
+					defaultValue={newPass}
+					placeholder="Mot de passe"
+					label="Mot de passe"
+					onChangeText={value => setNewPass(value)}
+					secureTextEntry
+					autoCompleteType="password"
+				/>
+				<Input
+					containerStyle={styles.inputContainerStyle}
+					defaultValue={confirmPass}
+					placeholder="Confirmation"
+					label="Confirmation"
+					onChangeText={value => setConfirmPass(value)}
+					secureTextEntry
+					autoCompleteType="password"
+				/>
+				<Button
+					containerStyle={{ marginTop: 16 }}
+					buttonStyle={{ borderColor: "green" }}
+					titleStyle={{ color: "green" }}
+					title="Sauvegarder"
+					type="outline"
+					onPress={save}
+				/>
 			</CardContainer>
 		</View >
 	)
@@ -52,6 +100,9 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: "#27466A",
+	},
+	inputContainerStyle: {
+		marginTop: 16
 	},
 	paddedContainer: {
 		padding: 10,
