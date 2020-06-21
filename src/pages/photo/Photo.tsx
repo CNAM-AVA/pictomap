@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Platform, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Platform, Dimensions } from 'react-native';
 import { Camera } from 'expo-camera';
+import * as Location from 'expo-location';
 import { Icon } from 'react-native-elements';
+
 // import { NavigationEvents } from 'react-navigation';
 // import { withNavigationFocus } from 'react-navigation';
 
 const DESIRED_RATIO = "16:9";
 
-export default function Photo( { navigation }:any) {
+export default function Photo({ navigation }: any) {
     const [hasPermission, setHasPermission] = React.useState<boolean>(false);
     const [cameraRef, setCameraRef] = useState<any>(null);
     const [type, setType] = useState(Camera.Constants.Type.back);
@@ -16,8 +18,15 @@ export default function Photo( { navigation }:any) {
 
     useEffect(() => {
         (async () => {
+            // Camera permission
             const { status } = await Camera.requestPermissionsAsync();
             setHasPermission(status === 'granted');
+
+            // Location permission
+            let locStatus = await (await Location.requestPermissionsAsync()).status;
+            if (locStatus !== 'granted') {
+                console.log('Permission to access location was denied');
+            }
         })();
     });
 
@@ -35,12 +44,12 @@ export default function Photo( { navigation }:any) {
         return blur;
     }, [navigation]);
 
-    const snap = async() => {
-        if(cameraRef){
+    const snap = async () => {
+        if (cameraRef) {
             const photo = await cameraRef.takePictureAsync();
-            // setState({photo})
-            // console.log(photo);
-            navigation.navigate('ImagePreview', {photo: photo, send: true});
+            let location = await Location.getCurrentPositionAsync({});
+            photo.location = location;
+            navigation.navigate('ImagePreview', { photo: photo, send: true });
         }
     }
 
@@ -50,8 +59,8 @@ export default function Photo( { navigation }:any) {
 
             // See if the current device has your desired ratio, otherwise get the maximum supported one
             // Usually the last element of "ratios" is the maximum supported ratio
-            const ratio = ratios.find((ratio:any) => ratio === DESIRED_RATIO) || ratios[ratios.length - 1];
-             
+            const ratio = ratios.find((ratio: any) => ratio === DESIRED_RATIO) || ratios[ratios.length - 1];
+
             setState({ ratio });
         }
     }
@@ -64,47 +73,47 @@ export default function Photo( { navigation }:any) {
     }
     return (
         <View style={styles.container}>
-            <View style={styles.background}/>
+            <View style={styles.background} />
             {loaded && (<Camera
-            style={styles.camera}
-            type={type}
-            ref={ref => setCameraRef(ref)}
-            onCameraReady={prepareRatio} // You can only get the supported ratios when the camera is mounted
-            ratio={state.ratio}
+                style={styles.camera}
+                type={type}
+                ref={ref => setCameraRef(ref)}
+                onCameraReady={prepareRatio} // You can only get the supported ratios when the camera is mounted
+                ratio={state.ratio}
             />)}
             <View
-            style={styles.buttons}
+                style={styles.buttons}
             >
                 <Icon // this is a fake icon to corretly align the others
-                style={styles.snap}
-                name='camera'
-                type='font-awesome'
-                color='transparent'
-                underlayColor='transparent'
-                size={70}/>
-                <Icon 
-                style={styles.snap}
-                name='camera'
-                type='font-awesome'
-                color='white'
-                underlayColor='transparent'
-                size={70}
-                onPress={snap}
+                    style={styles.snap}
+                    name='camera'
+                    type='font-awesome'
+                    color='transparent'
+                    underlayColor='transparent'
+                    size={70} />
+                <Icon
+                    style={styles.snap}
+                    name='camera'
+                    type='font-awesome'
+                    color='white'
+                    underlayColor='transparent'
+                    size={70}
+                    onPress={snap}
                 />
-                <Icon 
-                style={styles.flipIcon}
-                name='refresh'
-                type='font-awesome'
-                color='white'
-                underlayColor='transparent'
-                size={70}
-                onPress={() => {
-                    setType(
-                        type === Camera.Constants.Type.back
-                        ? Camera.Constants.Type.front
-                        : Camera.Constants.Type.back
-                    );
-                }}
+                <Icon
+                    style={styles.flipIcon}
+                    name='refresh'
+                    type='font-awesome'
+                    color='white'
+                    underlayColor='transparent'
+                    size={70}
+                    onPress={() => {
+                        setType(
+                            type === Camera.Constants.Type.back
+                                ? Camera.Constants.Type.front
+                                : Camera.Constants.Type.back
+                        );
+                    }}
                 />
             </View>
         </View>
@@ -112,8 +121,8 @@ export default function Photo( { navigation }:any) {
 }
 
 const { width: winWidth, height: winHeight } = Dimensions.get('window');
-const newHeight = winWidth*(16/9);
-const heightOffset = (winHeight-newHeight)/2;
+const newHeight = winWidth * (16 / 9);
+const heightOffset = (winHeight - newHeight) / 2;
 
 const styles = StyleSheet.create({
     container: {
@@ -125,7 +134,7 @@ const styles = StyleSheet.create({
         right: 0,
         left: 0,
         width: '100%',
-        position: 'absolute', 
+        position: 'absolute',
         backgroundColor: 'black'
     },
     camera: {
@@ -152,8 +161,8 @@ const styles = StyleSheet.create({
     snap: {
     },
     text: {
-        fontSize: 18, 
-        marginBottom: 10, 
+        fontSize: 18,
+        marginBottom: 10,
         color: 'white',
         alignItems: 'center',
         justifyContent: 'center',
