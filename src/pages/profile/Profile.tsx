@@ -14,10 +14,10 @@ export default function Profile() {
 
 	function handleLogout() {
 		userService.logout()
-		.then(() => {
-			navigation.navigate('Login');
-		})
-		.catch(() => console.log("Somethign went wrong during logout."));
+			.then(() => {
+				navigation.navigate('Login');
+			})
+			.catch(() => console.log("Somethign went wrong during logout."));
 	}
 
 	return (

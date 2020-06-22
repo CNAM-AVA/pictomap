@@ -22,7 +22,7 @@ export default function HomeView({ navigation }: any) {
         <SafeAreaView style={{ flex: 1 }}>
             <Header
                 leftComponent={<ProfilePicture actionOnPress={() => navigation.navigate('Profile')} />}
-                centerComponent={{ text: 'HOME', style: { color: '#fff' } }}
+                centerComponent={{ text: 'PictoMap', style: { color: '#fff' } }}
                 rightComponent={<Icon
                     name='plus'
                     type='font-awesome'

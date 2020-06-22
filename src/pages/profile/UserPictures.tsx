@@ -1,20 +1,44 @@
-import React from 'react';
-import { StyleSheet, View, ScrollView, SafeAreaView, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, ScrollView, SafeAreaView, Image, Text, Dimensions } from 'react-native';
 import { Header, Icon } from 'react-native-elements';
 import ProfilePicture from '../../components/ProfilePicture';
+import { pictureService, userService } from '../../services';
+
 import 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function UserPictures({ navigation }: any) {
+    const [userPictures, setUserPictures] = useState<any>([{'uuid':'0'}]);
+
+    useEffect(() => {
+        getUserPictures();
+    }, [userPictures[0].uuid]);
+    
+    function getUserPictures(){
+        let userId = userService.getUser().uuid;
+        pictureService.getUserPictures(userId)
+        .then((res:any) => {
+            setUserPictures(res);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
+    
     function fakeList() {
-        let fakeList: Array<any> = []
-        for (let i = 0; i < 10; i++) {
-            fakeList.push(
-                <View key={i} style={styles.row_grid}>
-                    <Image source={{}} style={styles.element_grid_left} />
-                    <Image source={{}} style={styles.element_grid_right} />
-                </View>);
-        }
-        return fakeList;
+        return userPictures.map((picture:any, key:any) => 
+            (<TouchableOpacity
+                key={key}
+                onPress={() => {
+                    navigation.navigate('ImagePreview', {photo: {uri: picture.uri}, send: false});
+                }}
+            >
+                <Image 
+                source={{uri: picture.uri}}
+                style={styles.element_grid}
+                />
+            </TouchableOpacity>)
+        );
     }
 
     return (
@@ -75,6 +99,8 @@ export default function UserPictures({ navigation }: any) {
     )
 }
 
+const { width: winWidth, height: winHeight } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
     text: {
         alignItems: 'center',
@@ -97,14 +123,17 @@ const styles = StyleSheet.create({
     scrollView: {
     },
     grid: {
-        flex: 1,
+        // flex: 1,
+        // flexWrap: 'wrap',
+        // marginBottom: 8,
+        // flexDirection: "column"
         marginBottom: 8,
-        flexDirection: "column"
+        flex: 1,
+        flexWrap: 'wrap',
+        flexDirection: "row"
     },
     row_grid: {
-        marginTop: 8,
-        flex: 0.5,
-        flexDirection: "row"
+        
     },
     element_grid_right: {
         flex: 1,
@@ -119,6 +148,14 @@ const styles = StyleSheet.create({
         height: 300,
         marginLeft: 8,
         marginRight: 4,
+        backgroundColor: "#599688",
+        borderRadius: 8,
+    },
+    element_grid: {
+        height: 300,
+        width: (winWidth/2)-12,
+        marginLeft: 8,
+        marginTop: 8,
         backgroundColor: "#599688",
         borderRadius: 8,
     },
