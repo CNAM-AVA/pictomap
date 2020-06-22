@@ -61,7 +61,7 @@ export default function HomeView({ navigation }: any) {
                 color='#27466A'
                 underlayColor='transparent'
                 size={80}
-                onPress={() => console.log('click on map button')}
+                onPress={() => navigation.navigate('Map')}
                 containerStyle={styles.map_icon}
             />
         </SafeAreaView>
