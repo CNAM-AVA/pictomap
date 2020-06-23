@@ -228,9 +228,13 @@ export default class UserService {
 
     searchUser(searchedName: string) {
         return new Promise((resolve, reject) => {
-            firestore.collection("users").where("name", "==", searchedName).get()
+            if(searchedName === this.getUser().name){
+                resolve(false);
+            } else {
+                firestore.collection("users")
+                .where('name', '==', searchedName).get()
                 .then((querySnapshot) => {
-                    if (querySnapshot.empty)
+                    if(querySnapshot.empty)
                         resolve(false);
                     querySnapshot.forEach((doc) => {
                         resolve(doc.data());
@@ -240,6 +244,7 @@ export default class UserService {
                     console.log("Error getting user : ", error);
                     reject(error);
                 });
+            }
         });
     }
 

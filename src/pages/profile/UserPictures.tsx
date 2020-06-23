@@ -26,6 +26,8 @@ export default function UserPictures({ navigation }: any) {
     }
     
     function fakeList() {
+        if(userPictures[0].uuid === '0')
+            return (<Text style={styles.empty}>Aucune photo</Text>);
         return userPictures.map((picture:any, key:any) => 
             (<TouchableOpacity
                 key={key}
@@ -72,9 +74,10 @@ export default function UserPictures({ navigation }: any) {
 
             <SafeAreaView style={styles.container}>
                 <ScrollView style={styles.scrollView}>
-                    <View style={styles.grid}>
-                        {fakeList()}
-                    </View>
+                    {userPictures[0].uuid === '0' ?
+                    (<Text style={styles.empty}>Aucune photo</Text>)
+                    :(<View style={styles.grid}>{fakeList()}</View>)}
+                    
                 </ScrollView>
             </SafeAreaView>
             {/* <Icon
@@ -158,5 +161,10 @@ const styles = StyleSheet.create({
         marginTop: 8,
         backgroundColor: "#599688",
         borderRadius: 8,
+    },
+    empty: {
+        fontSize: 20,
+        marginTop: 10,
+        alignSelf: 'center'
     },
 });
