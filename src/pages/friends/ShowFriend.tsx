@@ -71,7 +71,7 @@ export default function ShowFriend({route, navigation}:any, ) {
 					backgroundColor: '#27466A',
 					height: 70,
 					paddingBottom: 25,
-                    shadowColor: 'transparent',
+                    borderBottomWidth: 0
 				}}
 			/>
 			<View style={styles.paddedContainer}>

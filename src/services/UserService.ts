@@ -159,6 +159,8 @@ export default class UserService {
             firestore.collection("friends").add({
                 uuid: this.getUser().uuid,
                 friend_uuid: friend_uuid,
+                accept_date: null,
+                request_date: new Date(),
             })
                 .then((docRef) => {
                     console.log("Document written with ID: ", docRef.id);
@@ -195,7 +197,8 @@ export default class UserService {
 
     getFriends() {
         return new Promise((resolve, reject) => {
-            firestore.collection("friends").where("uuid", "==", this.getUser().uuid).get()
+            firestore.collection("friends").where("uuid", "==", this.getUser().uuid)
+            .where("accept_date", "<", new Date()).get()
                 .then((querySnapshot) => {
                     let friendsUuidList: string[] = [];
                     let friendsList: {}[] = [];
@@ -265,5 +268,98 @@ export default class UserService {
                 });
         });
 
+    }
+
+    getSubscribeRequests(){
+        return new Promise((resolve, reject) => {
+            firestore.collection("friends")
+            .where("friend_uuid", "==", this.getUser().uuid)
+            .where('accept_date', '==', null).get()
+            .then((querySnapshot) => {
+                let requests:string[] = [];
+                let requesters:{}[] = [];
+                if (querySnapshot.empty) {
+                    resolve([]);
+                }
+                else {
+                    querySnapshot.forEach((request) => {
+                        requests.push(request.data().uuid);
+                    });
+                    firestore.collection("users").where("uuid", "in", requests).get()
+                        .then((querySnapshot) => {
+                            querySnapshot.forEach((requester) => {
+                                requesters.push(requester.data());
+                            });
+                            resolve(requesters);
+                        })
+                        .catch((error) => {
+                            reject(error);
+                            console.log("Error getting requesters : ", error);
+                        })
+                }
+            })
+            .catch((error) => {
+                console.log("Error getting subscribe requests : ", error);
+                reject(error);
+            });
+        });
+    }
+
+    acceptRequest(requester_uuid: string){
+        return new Promise((resolve, reject) => {
+            firestore.collection("friends")
+            .where("friend_uuid", "==", this.getUser().uuid)
+            .where('uuid', '==', requester_uuid).get()
+            .then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    resolve(false);
+                }
+                else {
+                    const request_id = querySnapshot.docs[0].id;
+                    firestore.collection("friends").doc(request_id).update({
+                        accept_date : new Date()
+                    })
+                    .then(() => {
+                        resolve(true);
+                    })
+                    .catch((error) => {
+                        console.log("Error updating accept_date field of request: ", error);
+                        reject(error);
+                    })
+                }
+            })
+            .catch((error) => {
+                console.log("Error getting subscribe requests : ", error);
+                reject(error);
+            });
+        });
+    }
+
+    refuseRequest(requester_uuid: string){
+        return new Promise((resolve, reject) => {
+            firestore.collection("friends")
+            .where("friend_uuid", "==", this.getUser().uuid)
+            .where('uuid', '==', requester_uuid).get()
+            .then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    resolve(false);
+                }
+                else {
+                    const request_id = querySnapshot.docs[0].id;
+                    firestore.collection("friends").doc(request_id).delete()
+                    .then(() => {
+                        resolve(true);
+                    })
+                    .catch((error) => {
+                        console.log("Error deleting request: ", error);
+                        reject(error);
+                    })
+                }
+            })
+            .catch((error) => {
+                console.log("Error getting subscribe requests : ", error);
+                reject(error);
+            });
+        });
     }
 }

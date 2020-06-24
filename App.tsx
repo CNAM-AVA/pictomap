@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { HomeView, ImagePreview, Photo, AddFriends, RegisterView, LoginView, ShowFriend, Profile, UserPictures, ProfileEdit } from './src/pages';
+import { HomeView, ImagePreview, Photo, AddFriends, RegisterView, LoginView, ShowFriend, Profile, UserPictures, ProfileEdit, SubscribeRequests } from './src/pages';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
 import { userService } from './src/services';
 import { YellowBox } from 'react-native';
 import _ from 'lodash';
+import subscribeRequests from './src/pages/friends/SubscribeRequests';
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
@@ -55,6 +56,11 @@ export default function App() {
 				<Stack.Screen
 					name="AddFriends"
 					component={AddFriends}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="SubscribeRequests"
+					component={SubscribeRequests}
 					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
