@@ -112,21 +112,21 @@ export default class PictureService {
         return new Promise((resolve, reject) => {
             let userPictures: any = [];
             firestore.collection("pictures").where("author_uuid", "==", userId).get()
-            .then((querySnapshot) => {
-                if(querySnapshot.empty){
-                    resolve([{'uuid':'0'}]);
-                } else {
-                    querySnapshot.forEach((doc) => {
-                        // doc.data() is never undefined for query doc snapshots
-                        userPictures.push(doc.data());
-                    });
-                    resolve(userPictures);
-                }
-            })
-            .catch((error) => {
-                console.log("Error getting documents: ", error);
-                reject(error);
-            });
+                .then((querySnapshot) => {
+                    if (querySnapshot.empty) {
+                        resolve([{ 'uuid': '0' }]);
+                    } else {
+                        querySnapshot.forEach((doc) => {
+                            // doc.data() is never undefined for query doc snapshots
+                            userPictures.push(doc.data());
+                        });
+                        resolve(userPictures);
+                    }
+                })
+                .catch((error) => {
+                    console.log("Error getting documents: ", error);
+                    reject(error);
+                });
         });
     }
 

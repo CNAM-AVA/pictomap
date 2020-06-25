@@ -1,7 +1,11 @@
 import UserService from './UserService';
 import PictureService from './PictureService';
 import FriendService from './FriendService';
+import LocationService from './LocationService';
+import FindingsService from './FindingsService';
 export const userService = new UserService();
 export const pictureService = new PictureService();
 export const friendService = new FriendService();
+export const locationService = new LocationService();
+export const findingsService = new FindingsService();
 export { default as HttpService } from './HttpService';
