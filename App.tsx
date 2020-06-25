@@ -4,17 +4,17 @@ import { HomeView, ImagePreview, Photo, AddFriends, RegisterView, LoginView, Sho
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
-import { userService } from './src/services';
+import { userService, locationService } from './src/services';
 import { YellowBox } from 'react-native';
 import _ from 'lodash';
-import subscribeRequests from './src/pages/friends/SubscribeRequests';
+import { Text } from 'react-native-elements';
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
 console.warn = (message: string | string[]) => {
-  if (message.indexOf('Setting a timer') <= -1) {
-    _console.warn(message);
-  }
+	if (message.indexOf('Setting a timer') <= -1) {
+		_console.warn(message);
+	}
 };
 
 const Stack = createStackNavigator();
@@ -23,11 +23,19 @@ export default function App() {
 
 	const [initialRoute, setInitialRoute] = useState(userService.isAuthenticated() ? 'Home' : 'Login');
 
+	const [location, setLocation] = useState({})
+
+	setInterval(() => {
+		setLocation(locationService.getCurrentLocation());
+	}, 1000)
+
 	// optimise l'utilisation de la mémoire de chaque <Stack.Screen/>
 	enableScreens();
 
 	return (
 		<NavigationContainer>
+			<Text>{locationService.location.coords.latitude};{locationService.location.coords.longitude}</Text>
+
 			<Stack.Navigator initialRouteName={initialRoute}>
 				<Stack.Screen
 					name="Home"
