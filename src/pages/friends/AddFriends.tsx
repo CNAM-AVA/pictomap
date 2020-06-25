@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, Button, ScrollView } from 'react-native';
 import TriangleBackground from '../../components/TriangleBackground';
 import { Card, Icon, Input, ListItem, Divider, Badge } from 'react-native-elements';
-import { userService } from '../../services';
+import { userService, friendService } from '../../services';
 import { User } from '../../utils';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -14,6 +14,7 @@ export default function AddFriends({navigation}:any) {
     const [subscribeRequests, setsubscribeRequests] = React.useState<any>([]);
     const [nbRequests, setNbRequests] = React.useState<any>(0);
     const [loaded, setLoaded] = React.useState<any>(true);
+    const user_uuid = userService.getUser().uuid;
 
     useEffect(() => {
         // getFriends();
@@ -38,7 +39,7 @@ export default function AddFriends({navigation}:any) {
     }, [navigation]);
 
     function getFriends(){
-        userService.getFriends()
+        friendService.getFriends(user_uuid)
         .then((res:any) => {
             setFriendList(res);
         })
@@ -48,7 +49,7 @@ export default function AddFriends({navigation}:any) {
     }
 
     function getSubscribeRequests(){
-        userService.getSubscribeRequests()
+        friendService.getSubscribeRequests(user_uuid)
         .then((res:any) => {
             setNbRequests(res.length);
             setsubscribeRequests(res);
@@ -69,7 +70,7 @@ export default function AddFriends({navigation}:any) {
     }
 
     function addFriend(friend_uuid: string){
-        userService.addFriend(friend_uuid)
+        friendService.addFriend(user_uuid, friend_uuid)
         .then((res) => {
             console.log('sucessfully added : '+JSON.stringify(res));
         })
@@ -211,15 +212,14 @@ export default function AddFriends({navigation}:any) {
             </View>
             
             <Card containerStyle={styles.cardContainer}>
-                {loaded &&
                 <ScrollView>
-                    { nbRequests === 0 ? <></> : subscribeRequestsBanner() /* On montre la bannière seulement s'il y a des demandes*/}
+                    { nbRequests === 0 ? <View></View> : subscribeRequestsBanner() /* On montre la bannière seulement s'il y a des demandes*/}
                     {
                         state.isSearching ? 
                         showSearchResult(searchResult)
                         : showFriendList(friendList)
                     }
-                </ScrollView>}
+                </ScrollView>
             </Card>
         </TriangleBackground>
     )
@@ -265,7 +265,6 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         flex: 1,
         marginBottom: 20,
-        marginTop: 0,
     },
     empty: {
         fontSize: 20,

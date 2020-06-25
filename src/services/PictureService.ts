@@ -96,6 +96,7 @@ export default class PictureService {
                                 uri: downloadURL,
                                 latitude: newPicture?.location?.coords?.latitude,
                                 longitude: newPicture?.location?.coords?.longitude,
+                                address: newPicture?.address,
                                 created_at: new Date(),
                                 author_uuid: this.authorId,
                             });
@@ -126,6 +127,30 @@ export default class PictureService {
                     console.log("Error getting documents: ", error);
                     reject(error);
                 });
+        });
+    }
+
+    deletePicture(picture_uuid: string){
+        return new Promise((resolve, reject) => {
+            let storageRef = storage.ref();
+            let deleteRef = storageRef.child(picture_uuid+'.jpg');
+            // Delete the file
+            deleteRef.delete().then(() => {
+                // File deleted successfully
+                firestore.collection("pictures").doc(picture_uuid).delete()
+                .then(() => {
+                    resolve('document successfully deleted!');
+                })
+                .catch((error) => {
+                    console.log("Error removing document: ", error);
+                    reject(error);
+                });
+            }).catch((error) => {
+                // Uh-oh, an error occurred!
+                console.log('An error occured when deleting file: ', error)
+                reject(error);
+            });
+            
         });
     }
 }

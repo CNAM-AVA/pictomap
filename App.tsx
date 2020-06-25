@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { HomeView, ImagePreview, Photo, AddFriends, RegisterView, LoginView, ShowFriend, Profile, UserPictures, ProfileEdit, SubscribeRequests } from './src/pages';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, TransitionSpecs, CardStyleInterpolators } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
 import { userService, locationService } from './src/services';
 import { YellowBox } from 'react-native';
@@ -34,9 +34,11 @@ export default function App() {
 
 	return (
 		<NavigationContainer>
-			<Text>{locationService.location.coords.latitude};{locationService.location.coords.longitude}</Text>
-
-			<Stack.Navigator initialRouteName={initialRoute}>
+      <Text>{locationService.location.coords.latitude};{locationService.location.coords.longitude}</Text>
+			<Stack.Navigator 
+			initialRouteName={initialRoute} 
+			screenOptions={{cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS}}
+			>
 				<Stack.Screen
 					name="Home"
 					component={HomeView}
@@ -64,7 +66,7 @@ export default function App() {
 				<Stack.Screen
 					name="AddFriends"
 					component={AddFriends}
-					options={{ headerShown: false }}
+					options={{headerShown: false}}
 				/>
 				<Stack.Screen
 					name="SubscribeRequests"

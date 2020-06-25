@@ -5,7 +5,7 @@ import ProfilePicture from '../../components/ProfilePicture';
 import 'react-native-gesture-handler';
 import CardContainer from '../../components/CardContainer';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { userService } from '../../services';
+import { userService, friendService } from '../../services';
 
 export default function ShowFriend({route, navigation}:any, ) {
     const [user, setUser] = React.useState<any>({
@@ -24,14 +24,15 @@ export default function ShowFriend({route, navigation}:any, ) {
           uuid: "",
     });
 
-    const user_uuid = route.params.userId;
+	const friend_uuid = route.params.userId;
+    const user_uuid = userService.getUser().uuid;
 
     useEffect(() => {
         getUser();
     }, []);
 
     function getUser(){
-        userService.getUserById(user_uuid)
+        userService.getUserById(friend_uuid)
         .then((res) => {
             setUser(res);
         })
@@ -41,7 +42,7 @@ export default function ShowFriend({route, navigation}:any, ) {
     }
 
     function deleteFriend(friend_uuid: string){
-        userService.deleteFriend(friend_uuid)
+        friendService.deleteFriend(user_uuid, friend_uuid)
         .then((res) => {
             console.log(res);
             navigation.navigate('AddFriends');
@@ -53,7 +54,10 @@ export default function ShowFriend({route, navigation}:any, ) {
 
     function stringDate(timestamp:any){
         let date = new Date(timestamp.seconds*1000);
-        return date.toLocaleDateString('fr-FR');
+        let year = date.getFullYear();
+        let month = date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : (date.getMonth()+1);
+        let day = date.getDate() < 10 ? '0'+date.getDate() : date.getDate();
+        return `${day}/${month}/${year}`;
     }
 
     return (
@@ -118,7 +122,7 @@ export default function ShowFriend({route, navigation}:any, ) {
 						titleStyle={{ color: "red" }}
 						title="Supprimer"
 						type="outline"
-						onPress={() => deleteFriend(user.uuid)}
+						onPress={() => deleteFriend(friend_uuid)}
 					/>
 				</CardContainer>
 			</View>

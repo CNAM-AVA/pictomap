@@ -9,10 +9,25 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function UserPictures({ navigation }: any) {
     const [userPictures, setUserPictures] = useState<any>([{'uuid':'0'}]);
+    const [loaded, setLoaded] = useState<any>(true)
 
     useEffect(() => {
         getUserPictures();
-    }, [userPictures[0].uuid]);
+    }, [userPictures[0].uuid, loaded]);
+
+    useEffect(() => {
+        const focus = navigation.addListener('focus', () => {
+            setLoaded(true);
+        });
+        return focus;
+    }, [navigation]);
+
+    useEffect(() => {
+        const blur = navigation.addListener('blur', () => {
+            setLoaded(false);
+        });
+        return blur;
+    }, [navigation]);
     
     function getUserPictures(){
         let userId = userService.getUser().uuid;
@@ -32,7 +47,7 @@ export default function UserPictures({ navigation }: any) {
             (<TouchableOpacity
                 key={key}
                 onPress={() => {
-                    navigation.navigate('ImagePreview', {photo: {uri: picture.uri}, send: false});
+                    navigation.navigate('ImagePreview', {photo: JSON.stringify(picture), send: false});
                 }}
             >
                 <Image 
