@@ -134,6 +134,27 @@ export default class UserService {
         })
     }
 
+    /**
+     * Sends an reset password email
+     */
+    resetPassword(email: string) {
+        return new Promise((resolve, reject) => {
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    resolve({
+                        success: true,
+                        message: ""
+                    })
+                })
+                .catch((error) => {
+                    reject({
+                        success: false,
+                        message: error
+                    })
+                })
+        })
+    }
+
     isAuthenticated() {
         return this.getUser().isAuthenticated();
     }
