@@ -94,7 +94,7 @@ export default function App() {
 					name="Map"
 					component={MapView}
 					// On cache le header car on en a déjà un personnalisé
-					options={{ headerShown: false }}
+					// options={{ headerShown: false }}
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>
