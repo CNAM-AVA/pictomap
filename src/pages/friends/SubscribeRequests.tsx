@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Button, ScrollView } from 'react-native';
 import TriangleBackground from '../../components/TriangleBackground';
 import { Card, Icon, Input, ListItem, Divider, Badge, Header } from 'react-native-elements';
-import { userService } from '../../services';
+import { userService, friendService } from '../../services';
 import { User } from '../../utils';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -10,16 +10,10 @@ export default function subscribeRequests({route, navigation}:any) {
     const {params} = route.params;
     const [subscribeRequests, setsubscribeRequests] = React.useState<any>(JSON.parse(params));
     const [changeCount, setChangeCount] = React.useState<any>(0);
-
-    useEffect(() => {
-        // getFriends();
-        console.log(subscribeRequests);
-        // getSubscribeRequests();
-        // getFriends();
-    });
+    const user_uuid = userService.getUser().uuid;
 
     function acceptRequest(requester_uuid: string){
-        userService.acceptRequest(requester_uuid)
+        friendService.acceptRequest(user_uuid, requester_uuid)
         .then((res:any) => {
             const index = subscribeRequests.findIndex((element:any) => element.uuid === requester_uuid);
             let requests = subscribeRequests;
@@ -33,7 +27,7 @@ export default function subscribeRequests({route, navigation}:any) {
     }
 
     function refuseRequest(requester_uuid: string){
-        userService.refuseRequest(requester_uuid)
+        friendService.refuseRequest(user_uuid, requester_uuid)
         .then((res:any) => {
             const index = subscribeRequests.findIndex((element:any) => element.uuid === requester_uuid);
             let requests = subscribeRequests;
@@ -45,40 +39,6 @@ export default function subscribeRequests({route, navigation}:any) {
             console.log(err);
         });
     }
-
-    // function getFriends(){
-    //     userService.getFriends()
-    //     .then((res:any) => {
-    //         setFriendList(res);
-    //     })
-    //     .catch((err) => {
-    //         console.log(err);
-    //     });
-    // }
-
-    // function getSubscribeRequests(){
-    //     userService.getSubscribeRequests()
-    //     .then((res:any) => {
-    //         console.log(res);
-    //         setsubscribeRequests(res);
-    //     })
-    //     .catch((err) => {
-    //         console.log(err);
-    //     });
-    // }
-
-
-    // function getRequesters(friend_uuid: string){
-    //     userService.addFriend(friend_uuid)
-    //     .then((res) => {
-    //         console.log('sucessfully added : '+JSON.stringify(res));
-    //     })
-    //     .catch((err) => {
-    //         console.log(err);
-    //     });
-    // }
-
-    
 
     function showRequestsList(list:any){
         if(list.length === 0){
