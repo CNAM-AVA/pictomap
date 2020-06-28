@@ -3,8 +3,10 @@ import { StyleSheet, View, ScrollView, SafeAreaView, Image } from 'react-native'
 import { Header, Icon } from 'react-native-elements';
 import ProfilePicture from '../../components/ProfilePicture';
 import 'react-native-gesture-handler';
+import { userService } from '../../services';
 
 export default function HomeView({ navigation }: any) {
+    const user = userService.getUser();
     function fakeList() {
         let fakeList: Array<any> = []
         for (let i = 0; i < 10; i++) {
@@ -20,7 +22,13 @@ export default function HomeView({ navigation }: any) {
     return (
         <View style={{ flex: 1 }}>
             <Header
-                leftComponent={<ProfilePicture actionOnPress={() => navigation.navigate('Profile')} />}
+                leftComponent={
+                    <ProfilePicture 
+                        title={user?.name[0]?.toUpperCase()} 
+                        uri={user.profile_picture} 
+                        actionOnPress={() => navigation.navigate('Profile')}
+                        size='medium'
+                    />}
                 centerComponent={{ text: 'PictoMap', style: { color: '#fff' } }}
                 rightComponent={<Icon
                     name='plus'

@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Avatar } from 'react-native-elements';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 export default function ProfilePicture(props: any) {
-    let size = props.size || "normal";
+    let size = props.size || 'medium';
     let customStyle = props.customStyle || {};
     let uri = props.uri;
     let title = props.title;
@@ -12,23 +13,26 @@ export default function ProfilePicture(props: any) {
     if(uri){
         return (
             <Avatar
-                size="xlarge"
+                size={size}
                 rounded
                 containerStyle={[styles.round_image, styles[size], customStyle]}
                 source={{ uri: uri }}
                 title={title}
                 onPress={props.actionOnPress}
+
             />
         )
     }
     else {
         return (
             <Avatar
-                size="xlarge"
+                // size="xlarge"
+                size={size}
                 rounded
                 containerStyle={[styles.round_image, styles[size], customStyle]}
                 title={title}
                 onPress={props.actionOnPress}
+                overlayContainerStyle={{backgroundColor: '#599688'}}
             />
         )
     }
@@ -42,14 +46,14 @@ const styles:any = StyleSheet.create({
         margin: 4,
     },
     small: {
-        height: 15,
-        width: 15,
+        height: 50,
+        width: 50,
         borderRadius: 10,
     },
     normal: {
         height: 50,
         width: 50,
-        borderRadius: 40,
+        borderRadius: 80,
     },
     big: {
         height: 100,
@@ -60,5 +64,8 @@ const styles:any = StyleSheet.create({
         height: 150,
         width: 150,
         borderRadius: 140,
-    }
+    },
+    avatar: {
+        color: 'red',
+    },
 });

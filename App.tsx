@@ -33,7 +33,7 @@ export default function App() {
 	enableScreens();
 
 	return (
-		<NavigationContainer>
+		<NavigationContainer >
       <Text>{locationService.location.coords.latitude};{locationService.location.coords.longitude}</Text>
 			<Stack.Navigator 
 			initialRouteName={initialRoute} 
