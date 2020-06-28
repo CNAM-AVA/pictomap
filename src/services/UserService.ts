@@ -164,18 +164,60 @@ export default class UserService {
         newUser.save();
     }
 
+    getCircularReplacer = () => {
+        const seen = new WeakSet();
+        return (key:any, value:any) => {
+          if (typeof value === "object" && value !== null) {
+            if (seen.has(value)) {
+              return;
+            }
+            seen.add(value);
+          }
+          return value;
+        };
+    };
+
     searchUser(searchedName: string) {
         return new Promise((resolve, reject) => {
             if (searchedName === this.getUser().name) {
                 resolve(false);
             } else {
                 firestore.collection("users")
-                    .where('name', '==', searchedName).get()
+                    .orderBy('name')
+                    .startAt(searchedName)
+                    .endAt(searchedName+'\uf8ff')
+                    .get()
                     .then((querySnapshot) => {
                         if (querySnapshot.empty)
                             resolve(false);
+                        let nbResults = querySnapshot.size;
+                        let i = 0;
+                        let results:any = [];
                         querySnapshot.forEach((doc) => {
-                            resolve(doc.data());
+                            //Vérifier qu'il n'existe pas déjà une demande
+                            const result = doc.data();
+                            result.friend = false;
+                            result.requested = false;
+                            firestore.collection("friends")
+                            .where('friend_uuid', '==', result.uuid)
+                            .where('uuid', '==', this.getUser().uuid).get()
+                            .then((querySnapshot) => {
+                                i++;
+                                if(!querySnapshot.empty){
+                                    result.requested = true;
+                                    querySnapshot.forEach((doc) => {
+                                        if(doc.data().accept_date !== null)
+                                            result.friend = true
+                                    });
+                                }
+                                results.push(result);
+                                if(i === nbResults)
+                                    resolve(results);
+                            })
+                            .catch((error) => {
+                                console.log("Error getting friend requests : ", error);
+                                reject(error);
+                            });
                         });
                     })
                     .catch((error) => {

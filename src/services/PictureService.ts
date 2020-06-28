@@ -3,25 +3,6 @@ import { storage, firestore, taskState } from '../utils/firebase';
 
 export default class PictureService {
 
-    constructor() {
-        // Reset local user if remote user state is changed
-        // auth.onAuthStateChanged((user) => {
-        //     if (user == null) {
-        //         this.user = new Observable<User>(new User({
-        //             uuid: '',
-        //             name: '',
-        //             mail: '',
-        //             profile_picture: '',
-        //             indiana_jones: false,
-        //             created_at: new Date(),
-        //             updated_at: new Date(),
-        //             is_authenticated: false,
-        //         }));
-        //     }
-        // })
-
-    }
-
     picture = new Picture({
         uuid: '',
         uri: '',
@@ -151,6 +132,37 @@ export default class PictureService {
                 reject(error);
             });
             
+        });
+    }
+
+    getUserStats(user_uuid:string){
+        let stats = {taken_pictures: 0, found_pictures: 0, nb_follower: 0}
+        return new Promise((resolve, reject) => {
+            firestore.collection("pictures").where('author_uuid', '==', user_uuid).get()
+            .then((querySnapshot) => {
+                stats.taken_pictures = querySnapshot.size
+                firestore.collection("found_pictures").where('user_uuid', '==', user_uuid).get()
+                .then((querySnapshot) => {
+                    stats.found_pictures = querySnapshot.size;
+                    firestore.collection("friends").where('friend_uuid', '==', user_uuid).get()
+                    .then((querySnapshot) => {
+                        stats.nb_follower = querySnapshot.size;
+                        resolve(stats);
+                    })
+                    .catch((error) => {
+                        console.log("Error getting number of follower: ", error);
+                        reject(error);
+                    });
+                })
+                .catch((error) => {
+                    console.log("Error getting found pictures: ", error);
+                    reject(error);
+                });
+            })
+            .catch((error) => {
+                console.log("Error getting taken pictures: ", error);
+                reject(error);
+            });
         });
     }
 }

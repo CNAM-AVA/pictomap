@@ -7,13 +7,24 @@ import { pictureService, userService } from '../../services';
 import 'react-native-gesture-handler';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-export default function UserPictures({ navigation }: any) {
+export default function UserPictures({ route, navigation }: any) {
     const [userPictures, setUserPictures] = useState<any>([{'uuid':'0'}]);
     const [loaded, setLoaded] = useState<any>(true)
 
+    let userId = '', title = '';
+    if(route.params){
+        userId = route.params.userId;
+        const userName = route.params.userName;
+        title = 'Photos de '+userName;
+    }
+    else{
+        userId = userService.getUser().uuid;
+        title = 'Mes photos'
+    }
+
     useEffect(() => {
-        getUserPictures();
-    }, [userPictures[0].uuid, loaded]);
+        getUserPictures(userId);
+    }, [loaded]);
 
     useEffect(() => {
         const focus = navigation.addListener('focus', () => {
@@ -29,8 +40,7 @@ export default function UserPictures({ navigation }: any) {
         return blur;
     }, [navigation]);
     
-    function getUserPictures(){
-        let userId = userService.getUser().uuid;
+    function getUserPictures(userId: string){
         pictureService.getUserPictures(userId)
         .then((res:any) => {
             setUserPictures(res);
@@ -58,6 +68,7 @@ export default function UserPictures({ navigation }: any) {
         );
     }
 
+
     return (
         <View style={{ flex: 1 }}>
             <Header
@@ -70,7 +81,7 @@ export default function UserPictures({ navigation }: any) {
                     onPress={() => navigation.goBack()}
 
                 />}
-                centerComponent={{ text: 'Mes photos', style: { color: '#fff' } }}
+                centerComponent={{ text: title, style: { color: '#fff' } }}
                 // rightComponent={<Icon
                 //     name='plus'
                 //     type='font-awesome'
