@@ -15,6 +15,7 @@ export default class Picture implements PictureProps {
     created_at: Date;
     author_uuid: string;
 
+
     constructor(props: PictureProps) {
         this.uuid = props.uuid;
         this.uri = props.uri;

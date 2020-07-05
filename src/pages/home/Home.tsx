@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, SafeAreaView, Image } from 'react-native';
+import { StyleSheet, View, ScrollView,  Image, Platform } from 'react-native';
 import { Header, Icon } from 'react-native-elements';
 import ProfilePicture from '../../components/ProfilePicture';
 import 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { userService } from '../../services';
 
 export default function HomeView({ navigation }: any) {
@@ -20,7 +21,7 @@ export default function HomeView({ navigation }: any) {
     }
 
     return (
-        <View style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1 }}>
             <Header
                 leftComponent={
                     <ProfilePicture 
@@ -41,7 +42,7 @@ export default function HomeView({ navigation }: any) {
                 />}
                 containerStyle={{
                     backgroundColor: '#27466A',
-                    height: 70,
+                    height: Platform.OS === 'ios' ? 120 : 70,
                     paddingBottom: 25
                 }}
             />
@@ -68,10 +69,10 @@ export default function HomeView({ navigation }: any) {
                 color='#27466A'
                 underlayColor='transparent'
                 size={80}
-                onPress={() => console.log('click on map button')}
+                onPress={() => navigation.navigate('Map')}
                 containerStyle={styles.map_icon}
             />
-        </View>
+        </SafeAreaView>
     )
 }
 

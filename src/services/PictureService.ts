@@ -111,6 +111,59 @@ export default class PictureService {
         });
     }
 
+    /**
+     *  Gets the findings of the user
+     * @param userId
+     */
+    async getUserFindings(userId: string) {
+        return new Promise<Picture[]>((resolve, reject) => {
+            firestore.collection("found_pictures").where("user_uuid", "==", userId).get()
+                .then(async (querySnapshot) => {
+
+                    let picUids: string[] = [];
+                    let foundPictures: Picture[] = [];
+                    querySnapshot.forEach((doc) => {
+                        picUids.push(doc.data().picture_uuid);
+                    });
+
+                    const pics = await this.getUserFindingsMetaData(picUids);
+                    resolve(pics);
+
+                })
+                .catch((error) => {
+                    console.log("Error getting documents: ", error);
+                    reject(error);
+                })
+        })
+    }
+
+    getUserFindingsMetaData(uids: string[]) {
+        return new Promise<Picture[]>((resolve, reject) => {
+            let foundPictures: Picture[] = [];
+
+            firestore.collection("pictures").where("uuid", "in", uids).get()
+                .then((snapshot) => {
+                    snapshot.forEach((pic) => {
+                        
+                        let d = pic.data();
+
+                        foundPictures.push({
+                            uuid: d!.uuid,
+                            uri: d!.uri,
+                            latitude: d!.latitude,
+                            longitude: d!.longitude,
+                            created_at: d!.created_at,
+                            author_uuid: d!.author_uuid
+                        })
+                    })
+                    resolve(foundPictures);
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+        })
+    }
+    
     deletePicture(picture_uuid: string){
         return new Promise((resolve, reject) => {
             let storageRef = storage.ref();
