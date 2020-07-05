@@ -1,5 +1,5 @@
 import { Observable } from "../utils/Observable";
-import { User, Credentials } from "../utils";
+import { User, Credentials, Picture } from "../utils";
 import { auth, firestore } from '../utils/firebase';
 import { locationService } from ".";
 
@@ -371,5 +371,27 @@ export default class UserService {
                     reject(error);
                 });
         });
+    }
+
+    hasPicture(p: Picture) {
+        let user = this.getUser();
+        return new Promise((resolve, reject) => {
+            firestore.collection("found_pictures").where("picture_uuid", "==", p.uuid).where("user_uuid", "==", user.uuid).get().then(r => {
+                resolve(!r.empty)
+            });
+        })
+    }
+
+    addFoundPicture(p: Picture) {
+        this.hasPicture(p).then(r => {
+            if (!r) {
+                // User does not have picture, add it
+                firestore.collection("found_pictures").add({
+                    created_at: new Date(),
+                    user_uuid: this.getUser().uuid,
+                    picture_uuid: p.uuid
+                })
+            }
+        })
     }
 }
