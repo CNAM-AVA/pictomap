@@ -7,15 +7,40 @@ import { pictureService, userService } from '../../services';
 import 'react-native-gesture-handler';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-export default function UserPictures({ navigation }: any) {
+export default function UserPictures({ route, navigation }: any) {
     const [userPictures, setUserPictures] = useState<any>([{'uuid':'0'}]);
+    const [loaded, setLoaded] = useState<any>(true)
+
+    let userId = '', title = '';
+    if(route.params){
+        userId = route.params.userId;
+        const userName = route.params.userName;
+        title = 'Photos de '+userName;
+    }
+    else{
+        userId = userService.getUser().uuid;
+        title = 'Mes photos'
+    }
 
     useEffect(() => {
-        getUserPictures();
-    }, [userPictures[0].uuid]);
+        getUserPictures(userId);
+    }, [loaded]);
+
+    useEffect(() => {
+        const focus = navigation.addListener('focus', () => {
+            setLoaded(true);
+        });
+        return focus;
+    }, [navigation]);
+
+    useEffect(() => {
+        const blur = navigation.addListener('blur', () => {
+            setLoaded(false);
+        });
+        return blur;
+    }, [navigation]);
     
-    function getUserPictures(){
-        let userId = userService.getUser().uuid;
+    function getUserPictures(userId: string){
         pictureService.getUserPictures(userId)
         .then((res:any) => {
             setUserPictures(res);
@@ -32,7 +57,7 @@ export default function UserPictures({ navigation }: any) {
             (<TouchableOpacity
                 key={key}
                 onPress={() => {
-                    navigation.navigate('ImagePreview', {photo: {uri: picture.uri}, send: false});
+                    navigation.navigate('ImagePreview', {photo: JSON.stringify(picture), send: false});
                 }}
             >
                 <Image 
@@ -42,6 +67,7 @@ export default function UserPictures({ navigation }: any) {
             </TouchableOpacity>)
         );
     }
+
 
     return (
         <View style={{ flex: 1 }}>
@@ -55,7 +81,7 @@ export default function UserPictures({ navigation }: any) {
                     onPress={() => navigation.goBack()}
 
                 />}
-                centerComponent={{ text: 'Mes photos', style: { color: '#fff' } }}
+                centerComponent={{ text: title, style: { color: '#fff' } }}
                 // rightComponent={<Icon
                 //     name='plus'
                 //     type='font-awesome'

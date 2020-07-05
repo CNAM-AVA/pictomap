@@ -46,9 +46,12 @@ export default function Photo({ navigation }: any) {
 
     const snap = async () => {
         if (cameraRef) {
-            const photo = await cameraRef.takePictureAsync();
+            let photo = await cameraRef.takePictureAsync();
             let location = await Location.getCurrentPositionAsync({});
+            let reverseLocation = await Location.reverseGeocodeAsync({latitude: location.coords.latitude, longitude: location.coords.longitude});
+            let address = reverseLocation[0];
             photo.location = location;
+            photo.address = {street: address.street, city: address.city, country: address.country};
             navigation.navigate('ImagePreview', { photo: photo, send: true });
         }
     }

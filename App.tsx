@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { HomeView, ImagePreview, Photo, AddFriends, RegisterView, LoginView, ShowFriend, Profile, UserPictures, ProfileEdit, SubscribeRequests } from './src/pages';
+import { HomeView, ImagePreview, Photo, AddFriends, RegisterView, LoginView, MapView, ShowFriend, Profile, UserPictures, ProfileEdit, SubscribeRequests } from './src/pages';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, TransitionSpecs, CardStyleInterpolators } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { userService, locationService } from './src/services';
 import { YellowBox } from 'react-native';
 import _ from 'lodash';
@@ -33,8 +34,11 @@ export default function App() {
 	enableScreens();
 
 	return (
-		<NavigationContainer>
-			<Stack.Navigator initialRouteName={initialRoute}>
+		<NavigationContainer >
+			<Stack.Navigator 
+			initialRouteName={initialRoute} 
+			screenOptions={{cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS}}
+			>
 				<Stack.Screen
 					name="Home"
 					component={HomeView}
@@ -62,7 +66,7 @@ export default function App() {
 				<Stack.Screen
 					name="AddFriends"
 					component={AddFriends}
-					options={{ headerShown: false }}
+					options={{headerShown: false}}
 				/>
 				<Stack.Screen
 					name="SubscribeRequests"
@@ -99,6 +103,12 @@ export default function App() {
 					component={LoginView}
 					// On cache le header car on en a déjà un personnalisé
 					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Map"
+					component={MapView}
+					// On cache le header car on en a déjà un personnalisé
+					// options={{ headerShown: false }}
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>
