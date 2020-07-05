@@ -1,5 +1,6 @@
 import { Observable } from "../utils/Observable";
 import { watchPositionAsync, LocationData, Accuracy, getCurrentPositionAsync } from 'expo-location';
+import { findingsService } from ".";
 
 export default class LocationService {
 
@@ -34,6 +35,7 @@ export default class LocationService {
 			distanceInterval: this.distanceInterval
 		}, (loc) => {
 			this.location = loc;
+			findingsService.tryToFindPicture()
 		});
 	}
 
