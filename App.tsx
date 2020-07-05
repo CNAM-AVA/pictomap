@@ -34,8 +34,6 @@ export default function App() {
 
 	return (
 		<NavigationContainer>
-			<Text>{locationService.location.coords.latitude};{locationService.location.coords.longitude}</Text>
-
 			<Stack.Navigator initialRouteName={initialRoute}>
 				<Stack.Screen
 					name="Home"
