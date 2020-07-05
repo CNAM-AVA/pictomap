@@ -46,7 +46,7 @@ export default function ProfileEdit() {
 					backgroundColor: '#27466A',
 					height: 70,
 					paddingBottom: 25,
-					shadowColor: 'transparent'
+                    borderBottomWidth: 0,
 				}}
 			/>
 			<CardContainer>

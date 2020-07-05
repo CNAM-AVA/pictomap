@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { HomeView, ImagePreview, Photo, AddFriends, RegisterView, LoginView, MapView, ShowFriend, Profile, UserPictures, ProfileEdit } from './src/pages';
+import { HomeView, ImagePreview, Photo, AddFriends, RegisterView, LoginView, MapView, ShowFriend, Profile, UserPictures, ProfileEdit, SubscribeRequests } from './src/pages';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, TransitionSpecs, CardStyleInterpolators } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
-import { userService } from './src/services';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { userService, locationService } from './src/services';
 import { YellowBox } from 'react-native';
 import _ from 'lodash';
+import { Text } from 'react-native-elements';
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
 console.warn = (message: string | string[]) => {
-  if (message.indexOf('Setting a timer') <= -1) {
-    _console.warn(message);
-  }
+	if (message.indexOf('Setting a timer') <= -1) {
+		_console.warn(message);
+	}
 };
 
 const Stack = createStackNavigator();
@@ -23,13 +24,22 @@ export default function App() {
 
 	const [initialRoute, setInitialRoute] = useState(userService.isAuthenticated() ? 'Home' : 'Login');
 
+	const [location, setLocation] = useState({})
+
+	setInterval(() => {
+		setLocation(locationService.getCurrentLocation());
+	}, 1000)
+
 	// optimise l'utilisation de la mémoire de chaque <Stack.Screen/>
 	enableScreens();
 
 	return (
-		<SafeAreaProvider>
-		<NavigationContainer>
-			<Stack.Navigator initialRouteName={initialRoute}>
+		<NavigationContainer >
+      <Text>{locationService.location.coords.latitude};{locationService.location.coords.longitude}</Text>
+			<Stack.Navigator 
+			initialRouteName={initialRoute} 
+			screenOptions={{cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS}}
+			>
 				<Stack.Screen
 					name="Home"
 					component={HomeView}
@@ -57,6 +67,11 @@ export default function App() {
 				<Stack.Screen
 					name="AddFriends"
 					component={AddFriends}
+					options={{headerShown: false}}
+				/>
+				<Stack.Screen
+					name="SubscribeRequests"
+					component={SubscribeRequests}
 					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
@@ -98,7 +113,6 @@ export default function App() {
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>
-		</SafeAreaProvider>
 	);
 }
 

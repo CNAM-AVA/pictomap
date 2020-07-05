@@ -1,137 +1,46 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, ScrollView, ActivityIndicator } from 'react-native';
 import TriangleBackground from '../../components/TriangleBackground';
-import { Card, Icon, Input, ListItem, Divider } from 'react-native-elements';
-import { userService } from '../../services';
+import { Card, Icon, Input, ListItem, Divider, Badge } from 'react-native-elements';
+import { userService, friendService } from '../../services';
 import { User } from '../../utils';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function AddFriends({navigation}:any) {
     const [value, setText] = React.useState('');
     const [state, setState] = React.useState({isSearching: false});
     const [searchResult, setSearchResult] = React.useState<any>();
+    const [fetchingResults, setFetchingResults] = React.useState<any>(false);
     const [friendList, setFriendList] = React.useState<any>([]);
+    const [subscribeRequests, setsubscribeRequests] = React.useState<any>([]);
+    const [nbRequests, setNbRequests] = React.useState<any>(0);
+    const [loaded, setLoaded] = React.useState<any>(true);
+    const user_uuid = userService.getUser().uuid;
 
     useEffect(() => {
         // getFriends();
-        getFriends();
-    }, [searchResult]);
-
-    const usersList = [
-        {
-        name: 'Amy Farha',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-        subtitle: 'Vice President',
-        isAFriend: true
-        },
-        {
-        name: 'brynn',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-        subtitle: 'none'
-        },
-        {
-        name: 'Chris Jackson',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        subtitle: 'Vice Chairman'
-        },
-        {
-        name: 'Amy Farha',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-        subtitle: 'Vice President'
-        },
-        {
-        name: 'brynn',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-        subtitle: 'none'
-        },
-        {
-        name: 'Chris Jackson',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        subtitle: 'Vice Chairman'
-        },
-        {
-        name: 'Amy Farha',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-        subtitle: 'Vice President'
-        },
-        {
-        name: 'brynn',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-        subtitle: 'none'
-        },
-        {
-        name: 'Amy Farha',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-        subtitle: 'Vice President'
-        },
-        {
-        name: 'brynn',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-        subtitle: 'none'
-        },
-        {
-        name: 'Chris Jackson',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        subtitle: 'Vice Chairman'
-        },
-        {
-        name: 'Amy Farha',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-        subtitle: 'Vice President'
-        },
-        {
-        name: 'brynn',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-        subtitle: 'none'
-        },
-        {
-        name: 'Chris Jackson',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        subtitle: 'Vice Chairman'
-        },
-        {
-        name: 'Amy Farha',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-        subtitle: 'Vice President'
-        },
-        {
-        name: 'brynn',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-        subtitle: 'none'
-        },
-    ]
-
-    const myFriends = [
-        {
-            name: 'Adrien Neto Ferreira',
-            avatar_url: 'https://firebasestorage.googleapis.com/v0/b/pictomap-9aad7.appspot.com/o/Bel-Homme.webp?alt=media&token=220a8ffa-161e-4423-8acb-80ceb5045a1d',
-        },
-        {
-            name: 'Antoine Plard',
-            avatar_url: '',
-        },
-    ]
-
-    const [users, setUsers] = React.useState([
-        {
-        name: 'Chris Jackson',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        subtitle: 'Vice Chairman',
-        isAFriend: false
-        },
-        {
-        name: 'Amy Farha',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-        subtitle: 'Vice President'
-        },
-        {
-        name: 'brynn',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-        subtitle: 'none'
+        if(loaded){
+            getSubscribeRequests();
+            getFriends();
         }
-    ]);
+    }, [searchResult, loaded]);
+
+    useEffect(() => {
+        const focus = navigation.addListener('focus', () => {
+            setLoaded(true);
+        });
+        return focus;
+    }, [navigation]);
+
+    useEffect(() => {
+        const blur = navigation.addListener('blur', () => {
+            setLoaded(false);
+        });
+        return blur;
+    }, [navigation]);
 
     function getFriends(){
-        userService.getFriends()
+        friendService.getFriends(user_uuid)
         .then((res:any) => {
             setFriendList(res);
         })
@@ -140,10 +49,24 @@ export default function AddFriends({navigation}:any) {
         });
     }
 
+    function getSubscribeRequests(){
+        friendService.getSubscribeRequests(user_uuid)
+        .then((res:any) => {
+            setNbRequests(res.length);
+            setsubscribeRequests(res);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
+
     function showUser(searchedName: string){
+        setFetchingResults(true);
         userService.searchUser(searchedName)
         .then((res) => {
+           console.log(res);
             setSearchResult(res);
+            setFetchingResults(false)
         })
         .catch((err) => {
             console.log(err);
@@ -151,7 +74,7 @@ export default function AddFriends({navigation}:any) {
     }
 
     function addFriend(friend_uuid: string){
-        userService.addFriend(friend_uuid)
+        friendService.addFriend(user_uuid, friend_uuid)
         .then((res) => {
             console.log('sucessfully added : '+JSON.stringify(res));
         })
@@ -171,46 +94,56 @@ export default function AddFriends({navigation}:any) {
 
     function onAddFriend(friend:any) {
         console.log(`${friend} has been added to your friends list !`)
-        setSearchResult({...searchResult, ...{isAFriend: true}});
+        setSearchResult({...searchResult, ...{requested: true}});
         addFriend(friend);
-        // let newUsers = users;
-        // newUsers[index] = {...newUsers[index], ...{isAFriend: true}};
-        // setUsers([...newUsers]);
     }
 
-    function showSearchResult(user:any){
-        if(!user)
+    function subtitle(requested:boolean, friend:boolean){
+        if(requested){
+            if(friend)
+                return 'Vous le suivez déjà'
+            return 'Demande en attente...'
+        }
+        return ''
+    }
+
+    function showSearchResult(results:any){
+        if(fetchingResults)
+            return <ActivityIndicator size={60} color="#27466A" />
+        if(!results)
             return <Text style={styles.empty}>Aucun résultat</Text>;
-        return (
-            <View>
-                <ListItem
-                    leftAvatar={ user.profile_picture ? {source: {uri: user.profile_picture}} : {title: user.name[0]}}
-                    title={user.name}
-                    containerStyle={{paddingLeft: 0, paddingRight: 0}}
-                    rightElement={user.isAFriend 
-                    ? 
-                    <Icon
-                        name='check'
-                        type='font-awesome'
-                        color='green'
-                        underlayColor='transparent'
-                        size={30}
-                        onPress={() => console.log(`${user.name} is already your friend`)}
+        return results.map((user:any, i:any) => {
+            return(
+                <View key={i}>
+                    <ListItem
+                        leftAvatar={ user.profile_picture ? {source: {uri: user.profile_picture}, size:50 } : {title: user.name[0], size:50 }}
+                        title={user.name}
+                        subtitle={subtitle(user.requested, user.friend)}
+                        containerStyle={{paddingLeft: 0, paddingRight: 0}}
+                        rightElement={user.requested 
+                        ? 
+                        <Icon
+                            name='check'
+                            type='font-awesome'
+                            color='green'
+                            underlayColor='transparent'
+                            size={30}
+                        />
+                        :
+                        <Icon
+                            name='plus'
+                            type='font-awesome'
+                            color='grey'
+                            underlayColor='transparent'
+                            size={30}
+                            onPress={() => onAddFriend(user.uuid)}
+                        />
+                        }
                     />
-                    :
-                    <Icon
-                        name='plus'
-                        type='font-awesome'
-                        color='grey'
-                        underlayColor='transparent'
-                        size={30}
-                        onPress={() => onAddFriend(user.uuid)}
-                    />
-                    }
-                />
-                <Divider style={{ backgroundColor: 'grey' }}/>
-            </View>
-        );
+                    <Divider style={{ backgroundColor: 'grey' }}/>
+                </View>
+            );
+        })
     }
 
     function showFriendList(list:any){
@@ -221,24 +154,37 @@ export default function AddFriends({navigation}:any) {
                 return(
                     <View key={i}>
                         <ListItem
-                            leftAvatar={ u.profile_picture ? {source: {uri: u.profile_picture}} : {title: u.name[0]}}
+                            leftAvatar={ u.profile_picture ? {source: {uri: u.profile_picture}, size:50 } : {title: u.name[0], size:'medium'}}
                             title={u.name}
+                            subtitle={u.mail}
                             containerStyle={{paddingLeft: 0, paddingRight: 0}}
-                            // rightElement={<Icon
-                            //     name='plus'
-                            //     type='font-awesome'
-                            //     color='grey'
-                            //     underlayColor='transparent'
-                            //     size={30}
-                            //     onPress={() => console.log(`add friend ${u.name}`)}
-                            // />}
-                            onPress={() => navigation.navigate('ShowFriend', {userId: u.uuid})}
+                            onPress={() => navigation.navigate('ShowFriend', {user: JSON.stringify(u)})}
                         />
                         <Divider style={{ backgroundColor: 'grey' }}/>
                     </View>
                 );
             })
         )
+    }
+
+    function subscribeRequestsBanner(){
+        const requests = JSON.stringify(subscribeRequests);
+        return (
+            <TouchableOpacity
+                // style={styles.requestContainer}
+                onPress={() => navigation.navigate('SubscribeRequests', {params: requests})}
+            >
+                <View style={styles.requestContainer}>
+                    <Badge 
+                    value={nbRequests} 
+                    status="primary"
+                    badgeStyle={styles.badgeStyle}
+                    textStyle={{fontSize: 16}}
+                    />
+                    <Text style={styles.requestText}>Demande(s) d'abonnement en attente</Text>
+                </View>
+            </TouchableOpacity>
+        );
     }
 
     return(
@@ -274,11 +220,12 @@ export default function AddFriends({navigation}:any) {
             
             <Card containerStyle={styles.cardContainer}>
                 <ScrollView>
-                {
-                    state.isSearching ? 
-                    showSearchResult(searchResult)
-                    : showFriendList(friendList)
-                }
+                    { nbRequests === 0 ? <View></View> : subscribeRequestsBanner() /* On montre la bannière seulement s'il y a des demandes*/}
+                    {
+                        state.isSearching ? 
+                        showSearchResult(searchResult)
+                        : showFriendList(friendList)
+                    }
                 </ScrollView>
             </Card>
         </TriangleBackground>
@@ -325,13 +272,36 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         flex: 1,
         marginBottom: 20,
-        marginTop: 0,
     },
     empty: {
         fontSize: 20,
         // fontWeight: 'bold',
         marginTop: 10,
         alignSelf: 'center'
+    },
+    requestContainer: {
+        flexDirection: 'row',
+        // justifyContent: 'center',
+        alignItems: 'center',
+        height: 60,
+        paddingStart: 10,
+        borderColor: '#27466A',
+        borderStyle: 'solid',
+        borderRadius: 20,
+        borderWidth: 1,
+    },
+    badgeStyle:{
+        // width: 40,
+        minWidth: 30,
+        padding: 2,
+        height: 30, 
+        borderRadius: 15,
+        backgroundColor: '#27466A',
+    },
+    requestText: {
+        color: '#27466A',
+        fontSize: 15,
+        marginStart: 6,
     },
     user: {
 
