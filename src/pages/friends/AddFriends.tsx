@@ -6,9 +6,9 @@ import { userService, friendService } from '../../services';
 import { User } from '../../utils';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-export default function AddFriends({navigation}:any) {
+export default function AddFriends({ navigation }: any) {
     const [value, setText] = React.useState('');
-    const [state, setState] = React.useState({isSearching: false});
+    const [state, setState] = React.useState({ isSearching: false });
     const [searchResult, setSearchResult] = React.useState<any>();
     const [fetchingResults, setFetchingResults] = React.useState<any>(false);
     const [friendList, setFriendList] = React.useState<any>([]);
@@ -19,7 +19,7 @@ export default function AddFriends({navigation}:any) {
 
     useEffect(() => {
         // getFriends();
-        if(loaded){
+        if (loaded) {
             getSubscribeRequests();
             getFriends();
         }
@@ -39,147 +39,149 @@ export default function AddFriends({navigation}:any) {
         return blur;
     }, [navigation]);
 
-    function getFriends(){
+    function getFriends() {
         friendService.getFriends(user_uuid)
-        .then((res:any) => {
-            setFriendList(res);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+            .then((res: any) => {
+                setFriendList(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
-    function getSubscribeRequests(){
+    function getSubscribeRequests() {
         friendService.getSubscribeRequests(user_uuid)
-        .then((res:any) => {
-            setNbRequests(res.length);
-            setsubscribeRequests(res);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+            .then((res: any) => {
+                setNbRequests(res.length);
+                setsubscribeRequests(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
-    function showUser(searchedName: string){
+    function showUser(searchedName: string) {
         setFetchingResults(true);
         userService.searchUser(searchedName)
-        .then((res) => {
-           console.log(res);
-            setSearchResult(res);
-            setFetchingResults(false)
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+            .then((res) => {
+                console.log(res);
+                setSearchResult(res);
+                setFetchingResults(false)
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
-    function addFriend(friend_uuid: string){
+    function addFriend(friend_uuid: string) {
         friendService.addFriend(user_uuid, friend_uuid)
-        .then((res) => {
-            console.log('sucessfully added : '+JSON.stringify(res));
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+            .then((res) => {
+                console.log('sucessfully added : ' + JSON.stringify(res));
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
-    function onChangeText(text:any) {
-        if(text.length === 0)
-            setState({isSearching: false});
+    function onChangeText(text: any) {
+        if (text.length === 0)
+            setState({ isSearching: false });
         else
-            setState({isSearching: true});
+            setState({ isSearching: true });
         setText(text);
         showUser(text);
     }
 
-    function onAddFriend(friend:any) {
+    function onAddFriend(friend: any) {
         console.log(`${friend} has been added to your friends list !`)
-        setSearchResult({...searchResult, ...{requested: true}});
+        let newSearchResults = [...searchResult.map(x => (x.uuid == friend) ? { ...x, ...{ requested: true } } : x)];
+        console.log(newSearchResults)
+        setSearchResult(newSearchResults);
         addFriend(friend);
     }
 
-    function subtitle(requested:boolean, friend:boolean){
-        if(requested){
-            if(friend)
+    function subtitle(requested: boolean, friend: boolean) {
+        if (requested) {
+            if (friend)
                 return 'Vous le suivez déjà'
             return 'Demande en attente...'
         }
         return ''
     }
 
-    function showSearchResult(results:any){
-        if(fetchingResults)
+    function showSearchResult(results: any) {
+        if (fetchingResults)
             return <ActivityIndicator size={60} color="#27466A" />
-        if(!results)
+        if (!results)
             return <Text style={styles.empty}>Aucun résultat</Text>;
-        return results.map((user:any, i:any) => {
-            return(
+        return results.map((user: any, i: any) => {
+            return (
                 <View key={i}>
                     <ListItem
-                        leftAvatar={ user.profile_picture ? {source: {uri: user.profile_picture}, size:50 } : {title: user.name[0], size:50 }}
+                        leftAvatar={user.profile_picture ? { source: { uri: user.profile_picture }, size: 50 } : { title: user.name[0], size: 50 }}
                         title={user.name}
                         subtitle={subtitle(user.requested, user.friend)}
-                        containerStyle={{paddingLeft: 0, paddingRight: 0}}
-                        rightElement={user.requested 
-                        ? 
-                        <Icon
-                            name='check'
-                            type='font-awesome'
-                            color='green'
-                            underlayColor='transparent'
-                            size={30}
-                        />
-                        :
-                        <Icon
-                            name='plus'
-                            type='font-awesome'
-                            color='grey'
-                            underlayColor='transparent'
-                            size={30}
-                            onPress={() => onAddFriend(user.uuid)}
-                        />
+                        containerStyle={{ paddingLeft: 0, paddingRight: 0 }}
+                        rightElement={user.requested
+                            ?
+                            <Icon
+                                name='check'
+                                type='font-awesome'
+                                color='green'
+                                underlayColor='transparent'
+                                size={30}
+                            />
+                            :
+                            <Icon
+                                name='plus'
+                                type='font-awesome'
+                                color='grey'
+                                underlayColor='transparent'
+                                size={30}
+                                onPress={() => onAddFriend(user.uuid)}
+                            />
                         }
                     />
-                    <Divider style={{ backgroundColor: 'grey' }}/>
+                    <Divider style={{ backgroundColor: 'grey' }} />
                 </View>
             );
         })
     }
 
-    function showFriendList(list:any){
-        if(!list)
+    function showFriendList(list: any) {
+        if (!list)
             return (<Text style={styles.empty}>Aucun ami</Text>);
-        return(
-            list.map((u:any, i:any) => {
-                return(
+        return (
+            list.map((u: any, i: any) => {
+                return (
                     <View key={i}>
                         <ListItem
-                            leftAvatar={ u.profile_picture ? {source: {uri: u.profile_picture}, size:50 } : {title: u.name[0], size:'medium'}}
+                            leftAvatar={u.profile_picture ? { source: { uri: u.profile_picture }, size: 50 } : { title: u.name[0], size: 'medium' }}
                             title={u.name}
                             subtitle={u.mail}
-                            containerStyle={{paddingLeft: 0, paddingRight: 0}}
-                            onPress={() => navigation.navigate('ShowFriend', {user: JSON.stringify(u)})}
+                            containerStyle={{ paddingLeft: 0, paddingRight: 0 }}
+                            onPress={() => navigation.navigate('ShowFriend', { user: JSON.stringify(u) })}
                         />
-                        <Divider style={{ backgroundColor: 'grey' }}/>
+                        <Divider style={{ backgroundColor: 'grey' }} />
                     </View>
                 );
             })
         )
     }
 
-    function subscribeRequestsBanner(){
+    function subscribeRequestsBanner() {
         const requests = JSON.stringify(subscribeRequests);
         return (
             <TouchableOpacity
                 // style={styles.requestContainer}
-                onPress={() => navigation.navigate('SubscribeRequests', {params: requests})}
+                onPress={() => navigation.navigate('SubscribeRequests', { params: requests })}
             >
                 <View style={styles.requestContainer}>
-                    <Badge 
-                    value={nbRequests} 
-                    status="primary"
-                    badgeStyle={styles.badgeStyle}
-                    textStyle={{fontSize: 16}}
+                    <Badge
+                        value={nbRequests}
+                        status="primary"
+                        badgeStyle={styles.badgeStyle}
+                        textStyle={{ fontSize: 16 }}
                     />
                     <Text style={styles.requestText}>Demande(s) d'abonnement en attente</Text>
                 </View>
@@ -187,27 +189,27 @@ export default function AddFriends({navigation}:any) {
         );
     }
 
-    return(
+    return (
         <TriangleBackground style={styles.container}>
             <View style={styles.searchBar}>
-                    <Input
-                        leftIcon={<Icon 
-                            style={styles.searchIcon}
-                            name='search'
-                            size={25}
-                            type='font-awesome'
-                            color='grey'
-                            // underlayColor='transparent'
-                        />}
-                        containerStyle={styles.searchContainer}
-                        inputStyle={styles.searchInput}
-                        inputContainerStyle={{borderBottomWidth: 0, marginLeft: -10}}
-                        placeholder='Rechercher'
-                        value={value}
-                        clearButtonMode='always'
-                        onChangeText={(text) => onChangeText(text)}
-                    />
-                <Icon 
+                <Input
+                    leftIcon={<Icon
+                        style={styles.searchIcon}
+                        name='search'
+                        size={25}
+                        type='font-awesome'
+                        color='grey'
+                    // underlayColor='transparent'
+                    />}
+                    containerStyle={styles.searchContainer}
+                    inputStyle={styles.searchInput}
+                    inputContainerStyle={{ borderBottomWidth: 0, marginLeft: -10 }}
+                    placeholder='Rechercher'
+                    value={value}
+                    clearButtonMode='always'
+                    onChangeText={(text) => onChangeText(text)}
+                />
+                <Icon
                     style={styles.backButton}
                     name='arrow-left'
                     size={40}
@@ -217,14 +219,14 @@ export default function AddFriends({navigation}:any) {
                     onPress={() => navigation.navigate('Home')}
                 />
             </View>
-            
+
             <Card containerStyle={styles.cardContainer}>
                 <ScrollView>
-                    { nbRequests === 0 ? <View></View> : subscribeRequestsBanner() /* On montre la bannière seulement s'il y a des demandes*/}
+                    {nbRequests === 0 ? <View></View> : subscribeRequestsBanner() /* On montre la bannière seulement s'il y a des demandes*/}
                     {
-                        state.isSearching ? 
-                        showSearchResult(searchResult)
-                        : showFriendList(friendList)
+                        state.isSearching ?
+                            showSearchResult(searchResult)
+                            : showFriendList(friendList)
                     }
                 </ScrollView>
             </Card>
@@ -233,17 +235,17 @@ export default function AddFriends({navigation}:any) {
 }
 
 const styles = StyleSheet.create({
-	container: {
+    container: {
         flex: 1,
         // flexDirection: 'column',
     },
-    searchBar:{
+    searchBar: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 15,
     },
-    searchContainer:{
+    searchContainer: {
         // paddingLeft: 15,
         paddingRight: 15,
         paddingTop: 8,
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 30,
     },
-    searchInput:{
+    searchInput: {
         height: 40,
         paddingLeft: 10,
         color: 'grey',
@@ -290,11 +292,11 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         borderWidth: 1,
     },
-    badgeStyle:{
+    badgeStyle: {
         // width: 40,
         minWidth: 30,
         padding: 2,
-        height: 30, 
+        height: 30,
         borderRadius: 15,
         backgroundColor: '#27466A',
     },
