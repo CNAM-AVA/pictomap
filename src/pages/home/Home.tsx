@@ -1,32 +1,71 @@
-import React from 'react';
-import { StyleSheet, View, ScrollView,  Image, Platform } from 'react-native';
-import { Header, Icon } from 'react-native-elements';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, ScrollView, Image, Platform, Dimensions } from 'react-native';
+import { Header, Icon, Text } from 'react-native-elements';
 import ProfilePicture from '../../components/ProfilePicture';
 import 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { userService } from '../../services';
+import { userService, pictureService } from '../../services';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function HomeView({ navigation }: any) {
     const user = userService.getUser();
+
+    const [userFindings, setUserFindings] = useState<any>([]);
+
     function fakeList() {
-        let fakeList: Array<any> = []
-        for (let i = 0; i < 10; i++) {
-            fakeList.push(
-                <View key={i} style={styles.row_grid}>
-                    <Image source={{}} style={styles.element_grid_left} />
-                    <Image source={{}} style={styles.element_grid_right} />
-                </View>);
+        let i = 0;
+        return userFindings.map(function (picture: any, key: any) {
+            return (<TouchableOpacity
+                key={key}
+                style={styles.row_grid}
+                onPress={() => {
+                    navigation.navigate('ImagePreview', { photo: JSON.stringify(picture), send: false });
+                }}
+            >
+                <Image
+                    source={{ uri: picture.uri }}
+                    style={styles.element_grid}
+                />
+            </TouchableOpacity>)
         }
-        return fakeList;
+        );
     }
+
+    function loadFindings() {
+        pictureService.getUserFindings(user.uuid)
+            .then((res: any) => {
+                setUserFindings(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
+    useEffect(() => {
+        loadFindings()
+    });
+
+    // function fakeList() {
+    //     let fakeList: Array<any> = []
+    //     userFindings.forEach((e, i) => {
+    //         if (i % 2 == 0) {
+    //             fakeList.push(
+    //                 <View key={i} style={styles.row_grid}>
+    //                     <Image source={{}} style={i++ % 2 ? styles.element_grid_left : styles.element_grid_right} />
+    //                     <Image source={{}} style={i++ % 2 ? styles.element_grid_left : styles.element_grid_right} />
+    //                 </View>);
+    //         }
+    //     });
+    //     return fakeList;
+    // }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <Header
                 leftComponent={
-                    <ProfilePicture 
-                        title={user?.name[0]?.toUpperCase()} 
-                        uri={user.profile_picture} 
+                    <ProfilePicture
+                        title={user?.name[0]?.toUpperCase()}
+                        uri={user.profile_picture}
                         actionOnPress={() => navigation.navigate('Profile')}
                         size='medium'
                     />}
@@ -49,9 +88,10 @@ export default function HomeView({ navigation }: any) {
 
             <SafeAreaView style={styles.container}>
                 <ScrollView style={styles.scrollView}>
-                    <View style={styles.grid}>
-                        {fakeList()}
-                    </View>
+                    {userFindings.length == 0 ?
+                        (<Text style={styles.empty}>Aucune photo</Text>)
+                        : (<View style={styles.grid}>{fakeList()}</View>)}
+
                 </ScrollView>
             </SafeAreaView>
             <Icon
@@ -76,6 +116,8 @@ export default function HomeView({ navigation }: any) {
     )
 }
 
+const { width: winWidth, height: winHeight } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
     text: {
         alignItems: 'center',
@@ -98,14 +140,17 @@ const styles = StyleSheet.create({
     scrollView: {
     },
     grid: {
-        flex: 1,
+        // flex: 1,
+        // flexWrap: 'wrap',
+        // marginBottom: 8,
+        // flexDirection: "column"
         marginBottom: 8,
-        flexDirection: "column"
+        flex: 1,
+        flexWrap: 'wrap',
+        flexDirection: "row"
     },
     row_grid: {
-        marginTop: 8,
-        flex: 0.5,
-        flexDirection: "row"
+
     },
     element_grid_right: {
         flex: 1,
@@ -122,5 +167,18 @@ const styles = StyleSheet.create({
         marginRight: 4,
         backgroundColor: "#599688",
         borderRadius: 8,
+    },
+    element_grid: {
+        height: 300,
+        width: (winWidth / 2) - 12,
+        marginLeft: 8,
+        marginTop: 8,
+        backgroundColor: "#599688",
+        borderRadius: 8,
+    },
+    empty: {
+        fontSize: 20,
+        marginTop: 10,
+        alignSelf: 'center'
     },
 });
