@@ -95,7 +95,6 @@ export default function AddFriends({ navigation }: any) {
     function onAddFriend(friend: any) {
         console.log(`${friend} has been added to your friends list !`)
         let newSearchResults = [...searchResult.map(x => (x.uuid == friend) ? { ...x, ...{ requested: true } } : x)];
-        console.log(newSearchResults)
         setSearchResult(newSearchResults);
         addFriend(friend);
     }
