@@ -9,3 +9,4 @@ export { default as LoginView } from './login/Login';
 export { default as Profile } from './profile/Profile';
 export { default as UserPictures } from './profile/UserPictures';
 export { default as ShowFriend } from './friends/ShowFriend';
+export { default as MapView } from './maps/Map';

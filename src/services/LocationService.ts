@@ -1,9 +1,10 @@
 import { Observable } from "../utils/Observable";
 import { watchPositionAsync, LocationData, Accuracy, getCurrentPositionAsync } from 'expo-location';
+import { findingsService } from ".";
 
 export default class LocationService {
 
-	distanceInterval = 20; // Distance in meters to update location again
+	distanceInterval = 1; // Distance in meters to update location again
 	timeInterval = 1000; // Minimal time in ms between updates 
 	watchPosition = watchPositionAsync({
 		timeInterval: this.timeInterval,
@@ -34,6 +35,7 @@ export default class LocationService {
 			distanceInterval: this.distanceInterval
 		}, (loc) => {
 			this.location = loc;
+			findingsService.tryToFindPicture()
 		});
 	}
 

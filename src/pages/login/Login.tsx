@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Overlay } from "react-native-elements";
 import { StyleSheet, Text, View, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { userService } from '../../services'
 import TriangleBackground from '../../components/TriangleBackground';
@@ -13,6 +14,8 @@ export default function Login() {
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [resetEmail, setResetEmail] = useState<string>('');
+    const [visible, setVisible] = useState(false);
     const navigation = useNavigation();
     const dropDown = useRef<DropdownAlert>(null);
 
@@ -24,14 +27,31 @@ export default function Login() {
         };
 
         userService.login(credentials)
-        .then((res) => {
-            console.log(res);
-            navigation.navigate("Home");
-        })
-        .catch((err) => {
-            console.log(err);
-            dropDown.current!.alertWithType("error", "Error", err.message);
-        })
+            .then((res) => {
+                console.log(res);
+                navigation.navigate("Home");
+            })
+            .catch((err) => {
+                console.log(err);
+                dropDown.current!.alertWithType("error", "Error", err.message);
+            })
+    }
+
+    function toggleOverlay() {
+        setVisible(!visible);
+    }
+
+    function sendResetEmail() {
+        userService.resetPassword(resetEmail)
+            .then((res) => {
+                dropDown.current!.alertWithType("success", "Succès", "Email envoyé !")
+            })
+            .catch((err) => {
+                dropDown.current!.alertWithType("error", "Échec", err.message);
+            })
+            .finally(() => {
+                setVisible(false);
+            })
     }
 
     return (
@@ -52,21 +72,19 @@ export default function Login() {
 
                         <Input
                             labelStyle={styles.input}
-                            placeholder="email@addresse.com"
                             label="Email"
                             onChangeText={value => setEmail(value)}
                             autoCompleteType="email"
                             keyboardType="email-address"
-                            inputStyle={{color: "white"}}
+                            inputStyle={{ color: "white" }}
                         />
-                        
+
                         <Input
                             labelStyle={styles.input}
-                            placeholder="Mot de passe"
                             label="Mot de passe"
                             secureTextEntry
                             onChangeText={value => setPassword(value)}
-                            inputStyle={{color: "white"}}
+                            inputStyle={{ color: "white" }}
                             autoCompleteType="password"
                         />
 
@@ -78,11 +96,40 @@ export default function Login() {
                             buttonStyle={{ borderColor: 'white' }}
                             onPress={handleLogin}
                         />
-                         <TouchableOpacity
+                        <TouchableOpacity
                             onPress={() => navigation.navigate("Register")}
                         >
                             <Text style={styles.text}>Je n'ai pas de compte !</Text>
                         </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={toggleOverlay}
+                        >
+                            <Text style={styles.text}>Mot de passe oublié</Text>
+                        </TouchableOpacity>
+
+                        <Overlay overlayStyle={styles.overlay} overlayBackgroundColor={"#27466A"} isVisible={visible} onBackdropPress={toggleOverlay}>
+                            <View>
+                                <Text style={styles.text}>
+                                    Vous pouvez réinitialiser votre mot de passe en entrant votre adresse email dans le champ ci-dessous.
+                                    Un email vous sera envoyé pour changer votre mot de passe.
+                                </Text>
+                                <Input
+                                    labelStyle={{ color: "white", marginTop: 60 }}
+                                    label="Email"
+                                    onChangeText={value => setResetEmail(value)}
+                                    autoCompleteType="email"
+                                    keyboardType="email-address"
+                                    inputStyle={{ color: "white" }}
+                                />
+
+                                <TouchableOpacity
+                                    onPress={sendResetEmail}
+                                    style={{marginTop: 150}}
+                                >
+                                    <Text style={styles.text}>Envoyer un email de réinitialisation</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </Overlay>
                     </View>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
@@ -117,5 +164,9 @@ const styles = StyleSheet.create({
         color: 'white',
         alignSelf: 'center',
         marginTop: 20
+    },
+    overlay: {
+        padding: 15,
+        height: "60%"
     }
 });

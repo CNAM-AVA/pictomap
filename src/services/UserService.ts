@@ -1,5 +1,5 @@
 import { Observable } from "../utils/Observable";
-import { User, Credentials } from "../utils";
+import { User, Credentials, Picture } from "../utils";
 import { auth, firestore } from '../utils/firebase';
 import { locationService } from ".";
 
@@ -144,6 +144,27 @@ export default class UserService {
         })
     }
 
+    /**
+     * Sends an reset password email
+     */
+    resetPassword(email: string) {
+        return new Promise((resolve, reject) => {
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    resolve({
+                        success: true,
+                        message: ""
+                    })
+                })
+                .catch((error) => {
+                    reject({
+                        success: false,
+                        message: error
+                    })
+                })
+        })
+    }
+
     isAuthenticated() {
         return this.getUser().isAuthenticated();
     }
@@ -245,5 +266,120 @@ export default class UserService {
                 });
         });
 
+    }
+
+    getSubscribeRequests() {
+        return new Promise((resolve, reject) => {
+            firestore.collection("friends")
+                .where("friend_uuid", "==", this.getUser().uuid)
+                .where('accept_date', '==', null).get()
+                .then((querySnapshot) => {
+                    let requests: string[] = [];
+                    let requesters: {}[] = [];
+                    if (querySnapshot.empty) {
+                        resolve([]);
+                    }
+                    else {
+                        querySnapshot.forEach((request) => {
+                            requests.push(request.data().uuid);
+                        });
+                        firestore.collection("users").where("uuid", "in", requests).get()
+                            .then((querySnapshot) => {
+                                querySnapshot.forEach((requester) => {
+                                    requesters.push(requester.data());
+                                });
+                                resolve(requesters);
+                            })
+                            .catch((error) => {
+                                reject(error);
+                                console.log("Error getting requesters : ", error);
+                            })
+                    }
+                })
+                .catch((error) => {
+                    console.log("Error getting subscribe requests : ", error);
+                    reject(error);
+                });
+        });
+    }
+
+    acceptRequest(requester_uuid: string) {
+        return new Promise((resolve, reject) => {
+            firestore.collection("friends")
+                .where("friend_uuid", "==", this.getUser().uuid)
+                .where('uuid', '==', requester_uuid).get()
+                .then((querySnapshot) => {
+                    if (querySnapshot.empty) {
+                        resolve(false);
+                    }
+                    else {
+                        const request_id = querySnapshot.docs[0].id;
+                        firestore.collection("friends").doc(request_id).update({
+                            accept_date: new Date()
+                        })
+                            .then(() => {
+                                resolve(true);
+                            })
+                            .catch((error) => {
+                                console.log("Error updating accept_date field of request: ", error);
+                                reject(error);
+                            })
+                    }
+                })
+                .catch((error) => {
+                    console.log("Error getting subscribe requests : ", error);
+                    reject(error);
+                });
+        });
+    }
+
+    refuseRequest(requester_uuid: string) {
+        return new Promise((resolve, reject) => {
+            firestore.collection("friends")
+                .where("friend_uuid", "==", this.getUser().uuid)
+                .where('uuid', '==', requester_uuid).get()
+                .then((querySnapshot) => {
+                    if (querySnapshot.empty) {
+                        resolve(false);
+                    }
+                    else {
+                        const request_id = querySnapshot.docs[0].id;
+                        firestore.collection("friends").doc(request_id).delete()
+                            .then(() => {
+                                resolve(true);
+                            })
+                            .catch((error) => {
+                                console.log("Error deleting request: ", error);
+                                reject(error);
+                            })
+                    }
+                })
+                .catch((error) => {
+                    console.log("Error getting subscribe requests : ", error);
+                    reject(error);
+                });
+        });
+    }
+
+    hasPicture(p: Picture) {
+        let user = this.getUser();
+        return new Promise((resolve, reject) => {
+            firestore.collection("found_pictures").where("picture_uuid", "==", p.uuid).where("user_uuid", "==", user.uuid).get().then(r => {
+                resolve(!r.empty)
+            });
+        })
+    }
+
+    addFoundPicture(p: Picture) {
+        this.hasPicture(p).then(r => {
+            if (!r) {
+                // User does not have picture, add it
+                firestore.collection("found_pictures").add({
+                    created_at: new Date(),
+                    user_uuid: this.getUser().uuid,
+                    picture_uuid: p.uuid
+                })
+            }
+        })
     }
 }
